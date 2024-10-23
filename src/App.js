@@ -2,6 +2,8 @@ import './App.css';
 
 function App() {
   return (
+    /* Basic Structure for homepage */   
+    /* Citation: OpenAI. (2024). Assistance with the structure of homepage for App.js and App.css. ChatGPT. Retrieved October 23, 2024, from https://www.openai.com */
     <div className="background">
       <header>
         <div className="logo">Suggestify</div>
@@ -14,6 +16,7 @@ function App() {
           </ul>
         </nav>
         <div className="auth">
+          {/*Login and Sign up buttons*/}
           <button className="login-btn">Login</button>
           <button className="signup-btn">Sign Up</button>
         </div>
@@ -22,10 +25,11 @@ function App() {
       <section className="hero">
         <div className="hero-content">
           <h1>Discover Your Next Favorite Movie</h1>
+          {/*Search Bar*/}
           <input type="text" className="search-bar" placeholder="Search for movies..." />
         </div>
       </section>
-
+      {/*Basic layout for both recommended and trending movies */}
       <section id="recommended" className="movies-section">
         <h2>Recommended For You</h2>
         <div className="movie-grid">
