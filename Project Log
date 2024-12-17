@@ -1,0 +1,11 @@
+16/12/2024 - 22/12/2024
+17/12/2024
+Activities: 
+- Updated the orginal login/sigin in buttons to fit the backgorund of hompage and make it look nicer
+- Added flask for the backend 
+- Created basic struture of login page but needs some css for styling
+Challenges:
+- Learning and understanding React Router for navigation
+Next Steps: 
+- Complete login/signup pages, including css styling
+- Start working on user authentication functionality 
