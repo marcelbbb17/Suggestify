@@ -32,7 +32,7 @@ nav ul {
   display: flex;
   justify-content: center;
   list-style: none;
-  margin-left: 10px;
+  margin-left: 20px;
 }
 
 /*Creates space between item in navigation bar*/
@@ -44,6 +44,11 @@ nav ul li {
 nav ul li a {
   text-decoration: none;
   color: #f0f0f0;
+}
+
+nav ul li a:hover {
+  /*Navigation bar hover effect*/
+  color: rgb(170, 48, 48);
 }
 
 .auth a{
@@ -128,8 +133,8 @@ footer {
 
 /*login and sign up button display*/
 .login-button, .signup-button{
-  background-color: black;
   color: white;
+  background-color: white;
   padding: 10px;
   border-radius: 10px;
   margin-left: 20px;

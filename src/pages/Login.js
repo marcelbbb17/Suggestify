@@ -1,5 +1,7 @@
 import React from "react";
 import "../styles/Login.css"
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import Signin from "../pages/Signin";
 
 function Login() {
 
@@ -28,20 +30,19 @@ function Login() {
         <input type="password" className="input-field" placeholder="Password" autoComplete="off" required></input>
       </div>
       <div className="forgot">
-        <section>
+        <section id="remember-me">
           <input type="checkbox" id="checkbox"></input>
           <label for="check">Remember me</label>
         </section>
-        <section>
+        <section id="forgot-password">
           <a href="">Forgot Password</a>
         </section>
       </div>
       <div className="input-submit">
-        <button className="submit-button" id="submit"></button>
-        <label for="submit">Sign In</label>
+        <button className="submit-button" id="submit">Sign In</button>
       </div>
       <div className="sign-up-link">
-        <p>Don't have an account? <a href="">Sign In</a></p>
+        <p>Don't have an account? <Link to="/signin">Create Account</Link></p>
       </div>
     </section>
 
@@ -50,7 +51,6 @@ function Login() {
     </footer>
   </div>
   );
-
 }
 
 export default Login; 

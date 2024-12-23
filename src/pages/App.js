@@ -66,6 +66,7 @@ function Home() {
 }
 
 function App() {
+  // Routing logic for homepage, login, and sign up pages
   return (
     <BrowserRouter>
       <Routes>
