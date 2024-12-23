@@ -9,3 +9,15 @@ Challenges:
 Next Steps: 
 - Complete login/signup pages, including css styling
 - Start working on user authentication functionality 
+
+23/12/2024 - 29/12/2024
+23/12/2024
+Activities: 
+- Updated the login and signin pages with css
+- Linked "Create Account" button with signin page 
+Challenges: 
+- Issues with the background image not covering the entire screen 
+Next Steps:
+- Figure out how I am going to allows user to access the homepage 
+- Display the user's username after login in 
+- Start working on user authentication functionality 
