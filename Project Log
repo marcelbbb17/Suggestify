@@ -20,4 +20,17 @@ Challenges:
 Next Steps:
 - Figure out how I am going to allows user to access the homepage 
 - Display the user's username after login in 
-- Start working on user authentication functionality 
+- Start working on user authentication functionality
+
+20/01/2025 - 26/01/2025
+Activities: 
+- Created login and sign up functionality
+- Created the database for users 
+Challenges: 
+- Implementing the login and signup functionality in the backend and making sure the password are encrypted 
+- Implementing the login functionality as I struggled to match the password in the database to the password entered by user 
+Next Steps: 
+- Start creating the profile page for users
+- Start making the recommender system 
+
+27/01/2025 - 02/02/2025
