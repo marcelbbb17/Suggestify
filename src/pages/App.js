@@ -2,6 +2,8 @@ import '../styles/App.css';
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Login from "../pages/Login";
 import Signin from "../pages/Signin";
+import Homepage from '../pages/Homepage';
+import Profile_Page from '../pages/Profile_Page';
 
 function Home() {
   return (
@@ -71,8 +73,11 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />}/>
+        <Route path="/app" element={<Home />}/>
         <Route path="/login" element={<Login />}/>
         <Route path="/signin" element={<Signin />}/>
+        <Route path='/homepage' element={<Homepage/>}/>
+        <Route path="/profile" element={<Profile_Page/>}/>
       </Routes>
     </BrowserRouter>
   );

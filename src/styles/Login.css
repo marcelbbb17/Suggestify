@@ -64,27 +64,29 @@
   margin-right: 10px;  
 }
 
-a {
+#forgot-password-link, #create-account-link {
   text-decoration: none;
   color: rgb(199, 196, 196);
   transition: 0.3s;
 }
 
-a:hover {
+#forgot-password-link:hover, #create-account-link:hover {
   color: rgb(170, 48, 48);
   text-decoration: underline;
-
 }
 
 .submit-button {
+  display: inline-block; 
   width: 150px;
   height: 40px;
+  line-height: 40px; 
+  text-align: center; 
   color: #fff;
+  text-decoration: none; 
   background: #1e1e1e;
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  position: center;
   transition: transform 0.3s ease, background 0.3s ease;
   margin-bottom: 20px;
 }

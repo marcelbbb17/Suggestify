@@ -1,9 +1,37 @@
-import React from "react";
+import React, {useState} from "react";
 import "../styles/Login.css"
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import Signin from "../pages/Signin";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+
 
 function Login() {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // prevents page from relaoding everytime user click the button
+
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/login", {
+        email, password,
+      });
+
+      const username = response.data.username;
+      setMessage(response.data.success);
+      setTimeout(() => navigate("/homepage", {state: {username} }), 1000);
+    } 
+    catch (error) {
+      if (error.response) {
+        setMessage(error.response.data.error);
+      } else {
+        setMessage("An error occured")
+      }
+    }
+  };
 
   return (
     <div className="background">
@@ -15,6 +43,7 @@ function Login() {
           <li><a href="#trending">Trending</a></li>
           <li><a href="#watchlist">Watchlist</a></li>
           <li><a href="#profile">Profile</a></li>
+          <li><Link to="/app">Home</Link></li>
         </ul>
       </nav>
     </header>
@@ -23,11 +52,12 @@ function Login() {
       <div className="login-header">
         <h1>Login</h1>
       </div>
+      <form onSubmit={handleSubmit} className="login-sigin-up-form-element">
       <div className="input-box">
-        <input type="text" className="input-field" placeholder="Email" autoComplete="off" required></input>
+        <input type="text" className="input-field" placeholder="Email" autoComplete="off" value={email} onChange={(e) => setEmail(e.target.value)} required ></input>
       </div>
       <div className="input-box">
-        <input type="password" className="input-field" placeholder="Password" autoComplete="off" required></input>
+        <input type="password" className="input-field" placeholder="Password" autoComplete="off" value={password} onChange={(e) => setPassword(e.target.value)} required></input>
       </div>
       <div className="forgot">
         <section id="remember-me">
@@ -35,14 +65,18 @@ function Login() {
           <label for="check">Remember me</label>
         </section>
         <section id="forgot-password">
-          <a href="">Forgot Password</a>
+          <Link id="forgot-password-link" to="/forgot">Forgot Password</Link>
         </section>
       </div>
       <div className="input-submit">
         <button className="submit-button" id="submit">Sign In</button>
       </div>
+      </form>
       <div className="sign-up-link">
-        <p>Don't have an account? <Link to="/signin">Create Account</Link></p>
+        <p>Don't have an account? <Link id="create-account-link" to="/signin">Create Account</Link></p>
+      </div>
+      <div id="popup-message"> 
+        {message && <p className="message">{message}</p>}
       </div>
     </section>
 
