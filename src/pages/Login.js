@@ -1,12 +1,12 @@
-import React, {useState} from "react";
+import React, { useState} from "react";
 import "../styles/Login.css"
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
-
+import { useUser } from "../context/User_Context";
 
 function Login() {
 
+  const { setUsername } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -20,9 +20,15 @@ function Login() {
         email, password,
       });
 
+      const token = response.data.token
       const username = response.data.username;
-      setMessage(response.data.success);
-      setTimeout(() => navigate("/homepage", {state: {username} }), 1000);
+      if (token && username) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("username", username);
+        setUsername(username);
+        setMessage(response.data.success);
+        setTimeout(() => navigate("/homepage"), 1000);
+      }
     } 
     catch (error) {
       if (error.response) {
@@ -32,6 +38,7 @@ function Login() {
       }
     }
   };
+
 
   return (
     <div className="background">

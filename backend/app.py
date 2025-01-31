@@ -1,12 +1,41 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from database import get_db_connection
+from functools import wraps
+from dotenv import load_dotenv
 import bcrypt 
 import re 
-import uuid 
+import jwt
+import os 
+import datetime
+
+# import uuid 
 
 app = Flask(__name__)
 CORS(app)  # Allow React to access this API
+
+load_dotenv()  
+SECRET_KEY = str(os.getenv("JWT_SECRET_KEY"))
+
+def token_required(function):
+    @wraps(function)
+    def decorated(*args, **kwargs):
+        # Checks if the token exist 
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({"error": "Token is missing"}), 403
+        try:
+            # Exractes the token and gather the payload which is the email
+            token = token.split("Bearer ")[1]
+            data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            current_user = data['email']
+        except jwt.ExpiredSignatureError:
+            return jsonify({"error": "Session Expired. Please log in again"}), 403
+        except jwt.InvalidTokenError:
+            return jsonify({"error":"Token is invalid"}), 403
+        # returns the email to the original function 
+        return function(current_user, *args, **kwargs)
+    return decorated
 
 def isValidEmail(email):
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
@@ -61,7 +90,7 @@ def signup():
         connection.close()
         cursor.close()
 
-@app.route("/login", methods={"POST"}) 
+@app.route("/login", methods=["POST"]) 
 def login():
    data = request.json
    email = data.get("email")
@@ -90,12 +119,68 @@ def login():
        cursor.execute("SELECT username FROM users WHERE email = %s", (email,))
        username = cursor.fetchone()[0]
        if username:
-           return jsonify({"success": f"Welcome back {username}", "username": username}), 200
+           token = jwt.encode(
+               {"email": email, "exp": (datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=24)).timestamp()},
+               SECRET_KEY,
+               algorithm = "HS256"
+           )
+           return jsonify({"success": f"Welcome back {username}", "token" : token, "username": username}), 200 
    except Exception as e:
        return jsonify({"error": f"An error occured: {str(e)}"}), 500
    finally:
-       connection.close()
        cursor.close()
+       connection.close()
+   
+
+@app.route("/save_questionnaire", methods=["POST"])
+@token_required
+def save_questionnaire(current_user):
+    data = request.json
+    email = current_user 
+
+    favourite_movies = data.get("favouriteMovies", [])
+    genres = data.get("genres", [])
+    age = data.get("age")
+    gender = data.get("gender")
+    watch_frequency = data.get("watchFrequency")
+    favourite_actors = data.get("favouriteActors", [])
+
+    if not age or not gender or not watch_frequency:
+        return jsonify({"error": "Please input all fields"}), 400
+    
+    if len(favourite_actors) == 0 or len(favourite_movies) == 0 or len(genres) == 0:
+        return jsonify({"error": "Please add a favorite movie, actor and genre"}), 400
+    
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try: 
+        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        user_id = user[0] # Users id from users table 
+
+        cursor.execute("SELECT user_id FROM questionnaire WHERE user_id = %s", (user_id,))
+        exists_in_table = cursor.fetchone() # user_id from from queestionnaire
+        print(exists_in_table)
+
+        if exists_in_table:
+            # If user is already in questionnaire table then it updates their preference
+            cursor.execute("UPDATE questionnaire SET favourite_movies = %s, genres = %s, age = %s, gender = %s, watch_frequency = %s, favourite_actors = %s WHERE user_id = %s", (str(favourite_movies), str(genres), age, gender, watch_frequency, str(favourite_actors), user_id))
+            connection.commit()
+            return jsonify({"success": "We have updated your preferences"}), 200
+        else:
+            # If not then add their preference
+            cursor.execute("INSERT INTO questionnaire (user_id, favourite_movies, genres, age, gender, watch_frequency, favourite_actors) VALUES (%s, %s, %s, %s, %s, %s, %s)", (user_id, str(favourite_movies), str(genres), age, gender, watch_frequency, str(favourite_actors)),)
+            connection.commit()
+            return jsonify({"success": "Data was Saved successfuly"}), 201
+    except Exception as e:
+        return jsonify({"error": f"An error occured: {str(e)}"}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
 # Forgot password fucntionlity implement it later 
 # @app.route("/forgot-password", methods=["POST"])

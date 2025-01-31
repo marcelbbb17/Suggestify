@@ -1,9 +1,11 @@
 import '../styles/App.css';
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { UserProvider } from "../context/User_Context"; 
 import Login from "../pages/Login";
 import Signin from "../pages/Signin";
 import Homepage from '../pages/Homepage';
 import Profile_Page from '../pages/Profile_Page';
+import Questionnaire from '../pages/Questionnaire';
 
 function Home() {
   return (
@@ -70,16 +72,19 @@ function Home() {
 function App() {
   // Routing logic for homepage, login, and sign up pages
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />}/>
-        <Route path="/app" element={<Home />}/>
-        <Route path="/login" element={<Login />}/>
-        <Route path="/signin" element={<Signin />}/>
-        <Route path='/homepage' element={<Homepage/>}/>
-        <Route path="/profile" element={<Profile_Page/>}/>
-      </Routes>
-    </BrowserRouter>
+    <UserProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />}/>
+          <Route path="/app" element={<Home />}/>
+          <Route path="/login" element={<Login />}/>
+          <Route path="/signin" element={<Signin />}/>
+          <Route path='/homepage' element={<Homepage/>}/>
+          <Route path="/profile" element={<Profile_Page/>}/>
+          <Route path='/questionnaire' element={<Questionnaire/>}/>
+        </Routes>
+      </BrowserRouter>
+    </UserProvider>
   );
 }
 

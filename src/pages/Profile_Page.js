@@ -1,6 +1,30 @@
 import React from "react";
+import {useUser} from "../context/User_Context";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/Profile.css"
+
 
 function Profile_Page() {
+  const { username, profileImage, setProfileImage, logout } = useUser();
+  const navigate = useNavigate();
+
+
+  const changeProfilePicture = (event) => {
+    const file = event.target.files[0]; 
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfileImage(e.target.result); 
+        localStorage.setItem("profilePicture", e.target.result);
+      };
+      reader.readAsDataURL(file); 
+    }
+  };
+
+  const handleLogout = () =>{
+    return logout(navigate)
+  }
+
   return (
     <div className="background">
       <header>
@@ -10,18 +34,34 @@ function Profile_Page() {
             <li><a href="#movies">Movies</a></li>
             <li><a href="#trending">Trending</a></li>
             <li><a href="#watchlist">Watchlist</a></li>
-            <li><a href="#profile" className="active">Home</a></li>
+            <li><Link to="/homepage">Home</Link></li>
           </ul>
         </nav>
         <div className="username">
-          <p>Hello</p>
+          <p>Hello, {username || ":("}</p>
         </div>
       </header>
 
-      <section className="main">
-        <div className="profile-info">
+      <section className="main-profile-content">
+
+        <div className="profile-information">
           <h1>Profile Page</h1>
-          <p>Manage your account and preferences here.</p>
+          <div class="profile-picture-content">
+            <label htmlFor="upload-input">
+              <img id="profile-picture" src={profileImage} alt="profile" style={{cursor: "pointer"}}/>
+            </label>
+            <input type="file" id="upload-input" className="submit-button" accept="image/*" style={{display: "none"}}  onChange={changeProfilePicture}/> 
+          </div>
+          <h2>Welcome {username}!</h2>          
+        </div>
+
+        <div id="questionnaire-section">
+          <p>Complete the questionnaire below to get your recommended movies</p>
+          <Link to="/questionnaire" className="submit-button" id="complete-questionnaire-button">Complete Questionnaire</Link>
+        </div>
+
+        <div className="secondary-main-content">
+        <button className="submit-button" onClick={handleLogout}>Logout</button>
         </div>
       </section>
 

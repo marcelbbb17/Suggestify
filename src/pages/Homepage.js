@@ -1,11 +1,11 @@
 import React from "react";
 // import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import {useUser} from "../context/User_Context";
 
 function Homepage() {
-  const location = useLocation();
-  const username = location.state?.username;
-
+  const {username} = useUser();
+  
   return (
     /* Basic Structure for logged in homepage */   
     <div className="background">
@@ -21,7 +21,7 @@ function Homepage() {
         </nav>
         <div className="username">
           {/* Displays user username */}
-          <p>Hello {username}</p>
+          <p>Hello, {username || ":("}</p>
         </div>
       </header>
   

@@ -2,10 +2,12 @@ import React, {useState} from "react";
 import "../styles/Signin.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUser } from "../context/User_Context";
 
 function Signin() {
+  const {setUsername} = useUser()
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
+  const [username, setLocalUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("")
   const navigate = useNavigate();
@@ -17,8 +19,9 @@ function Signin() {
       const response = await axios.post("http://127.0.0.1:5000/signup", {
         email, username, password,
       });
+      setUsername(username);
       setMessage(response.data.message);
-      setTimeout(() => navigate("/homepage", { state: { username: username } }));
+      setTimeout(() => navigate("/homepage"), 1000);
     } 
     
     catch (error) {
@@ -58,7 +61,7 @@ function Signin() {
         <input type="text" className="input-field" placeholder="Email" autoComplete="off" value={email} onChange={(event) => setEmail(event.target.value)} required></input>
       </div>
       <div className="input-box">
-        <input type="text" className="input-field" placeholder="Username" autoComplete="off" value={username} onChange={(event) => setUsername(event.target.value)} required></input>
+        <input type="text" className="input-field" placeholder="Username" autoComplete="off" value={username} onChange={(event) => setLocalUsername(event.target.value)} required></input>
       </div>
       <div className="input-box">
         <input type="password" className="input-field" placeholder="Password" autoComplete="off" value={password} onChange={(event) => setPassword(event.target.value)} required></input>
