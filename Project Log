@@ -34,3 +34,15 @@ Next Steps:
 - Start making the recommender system 
 
 27/01/2025 - 02/02/2025
+Activities:
+- Created profile page 
+- Created questionnaire page
+- Fixed state persistance issues 
+Challenges: 
+- Learning and implementing JWT and undertsanding what it does and how it works in my applications 
+- Preventing the same user being enetered multiple time in the database after completing the questionnaire
+- Saving both the users' profile picture and username so that it doesn't dissapear when the user refreshes the page
+Next Steps: 
+- Start implementing a content based recommender system 
+- Start looking and understanding the TMBD API
+- Enhance current feature and improve UI
