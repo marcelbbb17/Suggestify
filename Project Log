@@ -46,3 +46,38 @@ Next Steps:
 - Start implementing a content based recommender system 
 - Start looking and understanding the TMBD API
 - Enhance current feature and improve UI
+
+03/02/2025 - 09/02/2025
+Activities: 
+ - Explored the TMBD API
+ - Created the /movies route 
+ Challenges:
+ - Implementing /movies to gather relevant movies for a specific user 
+ Next Steps:
+ - Optimise the /movies route since it currently takes too long to gather movies (3 minutes)
+ - Implement a basic content based recommender system 
+
+ 10/02/2025 - 16/02/2025
+ Activities:
+ - Created a basic content based recommender system 
+ - Prepared for Interview 
+ Challenges:
+ - Understanding TF-IDF and Consine Simlarity 
+ - Preventing the recommender system to base movies solely based on users favourite genre/actors/movies
+ - Managing inconsistencies between how movies are stored in the database and how they are presented by TMDB
+ - Creating reliable movie profiles for TF-IDF 
+ Next Steps: 
+ - Start integrating the recommender system to the frontend 
+ - Improve /movie route efficiency 
+
+ 17/02/2025 - 23/02/2025 
+ Activities:
+ - Completed the Interview 
+ Challenges/Feedback 
+ - Redefine my motivation as to why im building this project 
+ - Improve current recommender system by using more complex algorithms 
+ - Allow users to validate thier recommendation to determine whether a recommendation is good or not 
+ Next Steps:
+ - Integrate the current recommender system to the frontend 
+ - Create a feedback page/option to allow users to give feedback on recommendations
+ - Improve current recommender system 
