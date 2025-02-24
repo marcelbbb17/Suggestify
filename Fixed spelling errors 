@@ -62,7 +62,7 @@ Activities:
  - Created a basic content based recommender system 
  - Prepared for Interview 
  Challenges:
- - Understanding TF-IDF and Consine Simlarity 
+ - Understanding TF-IDF and Consine Similarity 
  - Preventing the recommender system to base movies solely based on users favourite genre/actors/movies
  - Managing inconsistencies between how movies are stored in the database and how they are presented by TMDB
  - Creating reliable movie profiles for TF-IDF 
