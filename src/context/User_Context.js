@@ -29,6 +29,7 @@ export function UserProvider({ children }) {
   const logout = (navigate) => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
+    localStorage.removeItem("profilePicture")
     setUsername(null)
     navigate("/app")
 

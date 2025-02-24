@@ -53,6 +53,9 @@ function Login() {
           <li><Link to="/app">Home</Link></li>
         </ul>
       </nav>
+      <div className="extra-space">
+        {/*div to provide extra space so that the navigation bar is centred*/}
+      </div>
     </header>
     {/* Login Section*/}
     <section className="login-form">
