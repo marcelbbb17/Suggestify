@@ -81,3 +81,16 @@ Activities:
  - Integrate the current recommender system to the frontend 
  - Create a feedback page/option to allow users to give feedback on recommendations
  - Improve current recommender system 
+
+ 24/03/2025 - 02/03/2025
+ Activities: 
+ - Implemented a recommendation page for displaying movie recommendations with filtering capabilities  
+ - Created a responsive landing page with animated elements
+ - Stored recommendations in the database to prevent excessive API calls
+ Challenges: 
+ - Understanding and using CSS animation 
+ - Fixind a database deadloack issue causing the /recommend endpoint to be called twice whenever user navigated to the recommendation page
+ Next Steps:
+ - Creating a feedback page for recommendations
+ - Start writing my dissertation, starting with the introduction 
+ - Create a watchlist page where user can add movies they've watched 
