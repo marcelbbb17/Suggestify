@@ -19,9 +19,18 @@ function Signin() {
       const response = await axios.post("http://127.0.0.1:5000/signup", {
         email, username, password,
       });
-      setUsername(username);
-      setMessage(response.data.message);
-      setTimeout(() => navigate("/homepage"), 1000);
+      const token = response.data.token
+      const receivedUsername = response.data.username
+      if (token && receivedUsername){
+        if (token && receivedUsername) {
+          localStorage.setItem("token", token);
+          localStorage.setItem("username", receivedUsername);
+          setUsername(username);
+          setMessage(response.data.success);
+          setTimeout(() => navigate("/homepage"), 1000);
+        }
+        
+      }
     } 
     
     catch (error) {
@@ -43,7 +52,7 @@ function Signin() {
           <li><a href="#trending">Trending</a></li>
           <li><a href="#watchlist">Watchlist</a></li>
           <li><a href="#profile">Profile</a></li>
-          <li><Link to="/app">Home</Link></li>
+          <li><Link to="/">Home</Link></li>
         </ul>
       </nav>
       <div className="extra-space">

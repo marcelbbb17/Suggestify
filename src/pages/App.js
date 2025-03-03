@@ -6,11 +6,12 @@ import Signin from "../pages/Signin";
 import Homepage from '../pages/Homepage';
 import Profile_Page from '../pages/Profile_Page';
 import Questionnaire from '../pages/Questionnaire';
+import RecommendedMovies from '../pages/Recommended_movies';
+import LandingPage from '../pages/LandingPage';
 
 function Home() {
   return (
-    /* Basic Structure for homepage */   
-    /* Citation: OpenAI. (2024). Assistance with the structure of homepage for App.js and App.css. ChatGPT. Retrieved October 23, 2024, from https://www.openai.com */
+    /* Basic Structure for homepage for authenticated users */   
     <div className="background">
       <header>
         <div className="logo">Suggestify</div>
@@ -75,13 +76,14 @@ function App() {
     <UserProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />}/>
+          <Route path="/" element={<LandingPage />}/>
           <Route path="/app" element={<Home />}/>
           <Route path="/login" element={<Login />}/>
           <Route path="/signin" element={<Signin />}/>
           <Route path='/homepage' element={<Homepage/>}/>
-          <Route path="/profile" element={<Profile_Page/>}/>
+          <Route path="/profile" element={<Profile_Page/>} /* Consider renaming this component to ProfilePage *//>
           <Route path='/questionnaire' element={<Questionnaire/>}/>
+          <Route path="/recommended" element={<RecommendedMovies/>}/>
         </Routes>
       </BrowserRouter>
     </UserProvider>

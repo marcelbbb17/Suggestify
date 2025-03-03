@@ -53,7 +53,7 @@ function Questionnaire() {
       },
     })
       setMessage(response.data.success);
-      setTimeout(() => navigate("/homepage"), 1000)
+      setTimeout(() => navigate("/recommended"), 1000)
     }
     catch(error) {
       if (error.response){
@@ -110,33 +110,69 @@ function Questionnaire() {
                 </button>
               </li>
             ))}
-          </ul>  
+          </ul> 
+        </div> 
 
-        </div>
-        <div id="genre-section">
-          <h2>Select Your Favorite Genres:</h2>
-          <label>
+          <div id="genre-section">
+            <h2>Select Your Favorite Genres:</h2>
+           <label>
             <input id="tick" type="checkbox" value="Action" onChange={handleGenreChange} /> Action
+          </label>
+          <label>
+            <input id="tick" type="checkbox" value="Adventure" onChange={handleGenreChange} /> Adventure
+          </label>
+          <label>
+            <input id="tick" type="checkbox" value="Animation" onChange={handleGenreChange} /> Animation
           </label>
           <label>
             <input id="tick" type="checkbox" value="Comedy" onChange={handleGenreChange} /> Comedy
           </label>
           <label>
-            <input id="tick" type="checkbox" value="Drama" onChange={handleGenreChange} /> Drama
-          </label>
-          <label>
-            <input id="tick" type="checkbox" value="Horror" onChange={handleGenreChange} /> Horror
-          </label>
-          <label>
-            <input id="tick" type="checkbox" value="Romance" onChange={handleGenreChange} /> Romance
-          </label>
-          <label>
-            <input id="tick" type="checkbox" value="Sci-Fi" onChange={handleGenreChange} /> Sci-Fi
-          </label>
-          <label>
-            <input id="tick" type="checkbox" value="Thriller" onChange={handleGenreChange} /> Thriller
-          </label>
-        </div>
+            <input id="tick" type="checkbox" value="Crime" onChange={handleGenreChange} /> Crime
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="Documentary" onChange={handleGenreChange} /> Documentary
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="Drama" onChange={handleGenreChange} /> Drama
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="Family" onChange={handleGenreChange} /> Family
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="Fantasy" onChange={handleGenreChange} /> Fantasy
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="History" onChange={handleGenreChange} /> History
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="Horror" onChange={handleGenreChange} /> Horror
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="Music" onChange={handleGenreChange} /> Music
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="Mystery" onChange={handleGenreChange} /> Mystery
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="Romance" onChange={handleGenreChange} /> Romance
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="Sci-Fi" onChange={handleGenreChange} /> Sci-Fi
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="TV Movie" onChange={handleGenreChange} /> TV Movie
+        </label>
+        <label>
+          <input id="tick" type="checkbox" value="Thriller" onChange={handleGenreChange} /> Thriller
+        </label>
+        <label>
+         <input id="tick" type="checkbox" value="War" onChange={handleGenreChange} /> War
+       </label>
+        <label>
+          <input id="tick" type="checkbox" value="Western" onChange={handleGenreChange} /> Western
+        </label>
+      </div>
 
         <div id="age-section">
           <h2>Age:</h2>

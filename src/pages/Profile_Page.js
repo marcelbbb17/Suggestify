@@ -25,6 +25,10 @@ function Profile_Page() {
     return logout(navigate)
   }
 
+  const handleRecommendationPage = () => {
+    setTimeout(()=> navigate("/recommended"), 1000)
+  }
+
   return (
     <div className="background">
       <header>
@@ -61,6 +65,8 @@ function Profile_Page() {
         </div>
 
         <div className="secondary-main-content">
+          <h3>See Your Recommended Movies Below</h3>
+          <button className="submit-button" onClick={handleRecommendationPage}> Recommended Movies </button>
         <button className="submit-button" onClick={handleLogout}>Logout</button>
         </div>
       </section>

@@ -50,7 +50,7 @@ function Login() {
           <li><a href="#trending">Trending</a></li>
           <li><a href="#watchlist">Watchlist</a></li>
           <li><a href="#profile">Profile</a></li>
-          <li><Link to="/app">Home</Link></li>
+          <li><Link to="/">Home</Link></li>
         </ul>
       </nav>
       <div className="extra-space">

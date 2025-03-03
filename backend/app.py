@@ -5,12 +5,12 @@ from functools import wraps
 from dotenv import load_dotenv
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from datetime import datetime, timedelta, timezone
 import requests
 import bcrypt 
 import re 
 import jwt
 import os 
-import datetime
 import numpy as np
 import ast
 
@@ -122,46 +122,91 @@ def movies(current_user):
 @app.route("/recommend", methods=["GET"])
 @token_required
 def recommend_movies(current_user):
-    user_preferences = get_user_preferences(current_user)
-    
-    # Converts favourite movies from database into a list
-    favorite_movies = user_preferences.get("favourite_movies", [])
-    if isinstance(favorite_movies, str):
-        try:
-            favorite_movies = ast.literal_eval(favorite_movies)
-        except Exception as e:
-            print("Error converting preferences", e)
-            favorite_movies = []
-    
-    # Get movies that match user preferences
-    candidate_movies = fetch_movies_for_user(current_user, user_preferences)
-    
-    if not favorite_movies:
-        return jsonify({"error": "No movies match user preference :( )"}), 404
+    print(f"Recommendation process has begun for {current_user}")
 
-    valid_favorite_profiles = []
-    for fav_movie in favorite_movies:
-        match = next((m["profile"] for m in candidate_movies if m["title"].lower() == fav_movie.lower()), None)
-        if match:
-            valid_favorite_profiles.append(match)
-        else:
-            fetched_profile = fecth_missing_movie(fav_movie)
-            if fetched_profile:
-                valid_favorite_profiles.append(fetched_profile)
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try: 
+        # gets the user ID from email
+        cursor.execute("SELECT id FROM users WHERE email = %s", (current_user,))
+        user_result = cursor.fetchone()
+        if not user_result:
+            cursor.close()
+            connection.close()
+            return jsonify({"error": "User not found"}), 404
+    
+        user_id = user_result[0]
+        cursor.close()
+        connection.close()
+
+        # Check if we need to refresh recommendation 
+        need_to_refresh = should_refresh_recommendations(user_id)
+
+        if not need_to_refresh:
+            print("No need to refresh recommendation. Returning Stored recommendations")
+            stored_recs = get_stored_recommendations(user_id)
+            if stored_recs:
+                for rec in stored_recs:
+                    try:
+                        rec['genres'] = ast.literal_eval(rec['genres'])
+                        rec['actors'] = ast.literal_eval(rec['actors'])
+                    except:
+                        rec['genres'] = []
+                        rec['actors'] = [] 
+                print(f"returning {len(stored_recs)} stored movies")    
+                return jsonify({"recommended_movies" : stored_recs}) 
+        
+        # If 24 hours passed or the user hasnt generated recs
+        print("Generating New Recommendations") 
+        user_preferences = get_user_preferences(current_user)
+    
+        # Converts favourite movies from database into a list
+        favorite_movies = user_preferences.get("favourite_movies", [])
+        if isinstance(favorite_movies, str):
+            try:
+                favorite_movies = ast.literal_eval(favorite_movies)
+            except Exception as e:
+                print("Error converting preferences", e)
+                favorite_movies = []
+    
+        # Get movies that match user preferences
+        candidate_movies = fetch_movies_for_user(current_user, user_preferences)
+    
+        if not favorite_movies:
+            return jsonify({"error": "No movies match user preference :( )"}), 404
+
+        valid_favorite_profiles = []
+        for fav_movie in favorite_movies:
+            match = next((m["profile"] for m in candidate_movies if m["title"].lower() == fav_movie.lower()), None)
+            if match:
+                valid_favorite_profiles.append(match)
             else:
-                print(f"'{fav_movie}' did not return a valid profile.")
+                fetched_profile = fecth_missing_movie(fav_movie)
+                if fetched_profile:
+                    valid_favorite_profiles.append(fetched_profile)
+                else:
+                    print(f"'{fav_movie}' did not return a valid profile.")
 
-    if not valid_favorite_profiles:
-        return jsonify({"error": "No valid favorite movie profiles found"}), 404
+        if not valid_favorite_profiles:
+            return jsonify({"error": "No valid favorite movie profiles found"}), 404
 
-    candidate_profiles = [movie["profile"] for movie in candidate_movies]
-    similarity_scores = compute_tfidf_similarity(candidate_profiles, valid_favorite_profiles, user_preferences)
+        candidate_profiles = [movie["profile"] for movie in candidate_movies]
+        similarity_scores = compute_tfidf_similarity(candidate_profiles, valid_favorite_profiles, user_preferences)
     
-    # Pass favorite_movies to exclude already-watched movies.
-    recommended_movies = get_top_recommendations(similarity_scores, candidate_movies, favorite_titles=favorite_movies, top_n=20)
-    
-    print([movie["original_title"] for movie in recommended_movies])
-    return jsonify({"recommended_movies": recommended_movies})
+        # Pass favorite_movies to exclude already-watched movies.
+        recommended_movies = get_top_recommendations(similarity_scores, candidate_movies, favorite_titles=favorite_movies, top_n=20)
+
+        # Save the recs to database
+        saved = save_recommendations(user_id, recommended_movies)
+        if not saved:
+            print("Fauled to save recommendations")
+        print([movie["original_title"] for movie in recommended_movies])
+        return jsonify({"recommended_movies": recommended_movies})
+    except Exception as e:
+        print(f"Error in recommend_movies: {e}")
+        return jsonify({"error": "An error occured gathering recommendations"}), 500
+
 
 
 def isValidEmail(email):
@@ -210,9 +255,14 @@ def signup():
             # Adds the new user to the database
             cursor.execute("INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s)", (username, email, hash_password))
             connection.commit()
-            return jsonify({"Success": "User registered successfully!"}), 201
+            token = jwt.encode(
+               {"email": email, "exp": (datetime.now(timezone.utc) + timedelta(hours=24)).timestamp()},
+               SECRET_KEY,
+               algorithm = "HS256"
+           )
+            return jsonify({f"Success": "User registered successfully!", "token" : token, "username": username}), 201
     except Exception as e:
-        return jsonify({"error": "An error occurred while registering the user"}), 500
+        return jsonify({"error": f"An error occurred while registering the user: {str(e)}"}), 500
     finally:
         connection.close()
         cursor.close()
@@ -247,7 +297,7 @@ def login():
        username = cursor.fetchone()[0]
        if username:
            token = jwt.encode(
-               {"email": email, "exp": (datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=24)).timestamp()},
+               {"email": email, "exp": (datetime.now(timezone.utc) + timedelta(hours=24)).timestamp()},
                SECRET_KEY,
                algorithm = "HS256"
            )
@@ -566,6 +616,175 @@ def fetch_movies_for_user(current_user, user_preferences):
         print(f"Failed to fetch movies: {response.status_code}")
         print(f"Response: {response.text}")
         return []
+    
+def get_stored_recommendations(user_id):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            r.id, r.user_id, r.movie_id, 
+            r.movie_title AS title,  
+            r.poster_path, r.overview,
+            r.recommendation_score, r.genres, r.actors,
+            r.release_date, r.vote_average,
+            m.last_updated 
+        FROM user_recommendations r 
+        JOIN user_recommendations_metadata m ON r.user_id = m.user_id 
+        WHERE r.user_id = %s 
+        ORDER BY r.recommendation_score DESC
+    """, (user_id,))
+
+    recommendations = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return recommendations
+
+def save_recommendations(user_id, recommendations):    
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        # First, ensure we delete ALL existing recommendations
+        cursor.execute("DELETE FROM user_recommendations WHERE user_id = %s", (user_id,))
+        print(f"Deleted {cursor.rowcount} old recommendations")
+        
+        # Add a set to track which movies we've already inserted
+        inserted_movie_ids = set()
+        
+        # Process each movie individually
+        successful_inserts = 0
+        for i, movie in enumerate(recommendations):
+            try:
+                movie_id = int(movie.get("id", 0))
+                
+                # Skip if we've already inserted this movie
+                if movie_id in inserted_movie_ids:
+                    print(f"Skipping duplicate movie ID: {movie_id}")
+                    continue
+                
+                inserted_movie_ids.add(movie_id)
+                
+                genres_str = str(movie.get("genres", []))
+                actors_str = str(movie.get("actors", []))
+                
+                cursor.execute("""
+                    INSERT INTO user_recommendations 
+                    (user_id, movie_id, movie_title, poster_path, overview, 
+                     recommendation_score, genres, actors, release_date, vote_average) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, (
+                    int(user_id), 
+                    movie_id,
+                    str(movie.get("title", "")),
+                    str(movie.get("poster_path", "")),
+                    str(movie.get("overview", "")),
+                    float(0.0),  
+                    genres_str,
+                    actors_str,
+                    str(movie.get("release_date", "")),
+                    float(movie.get("vote_average", 0.0))
+                ))
+                successful_inserts += 1
+            except Exception as e:
+                print(f"Error inserting movie #{i}: {e}")
+        
+        print(f"Successfully inserted {successful_inserts} movies")
+        
+        # Get current timestamp for metadata
+        current_time = datetime.now()
+        
+        # Update metadata table
+        cursor.execute("""
+            INSERT INTO user_recommendations_metadata (user_id, last_updated) 
+            VALUES (%s, %s) 
+            ON DUPLICATE KEY UPDATE last_updated = %s
+        """, (int(user_id), current_time, current_time))
+        
+        connection.commit()
+        return True
+    except Exception as e:
+        print(f"Fatal error in save_recommendations: {e}")
+        connection.rollback()
+        return False
+    finally:
+        cursor.close()
+        connection.close()
+
+def should_refresh_recommendations(user_id):
+    print(f"Checking if recs need to be refreshed for user {user_id}")
+
+    try: 
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("SELECT COUNT(*) as count FROM user_recommendations WHERE user_id = %s", (user_id,))
+        result = cursor.fetchone()
+        if not result or result['count'] == 0:
+            print("No recommendations exist so refresh")
+            return True
+        
+        # If they do exist continue
+        print(f"Recommendations do exist: {result['count']}")
+
+        # Get the timestamps
+        cursor.execute("""
+            SELECT 
+                rm.last_updated AS recs_updated
+            FROM user_recommendations_metadata rm
+            WHERE rm.user_id = %s
+        """, (user_id,))
+        metadata_result = cursor.fetchone()
+        
+        # Gets the questionnaire timestamp
+        cursor.execute("""
+            SELECT 
+                last_updated AS prefs_updated
+            FROM questionnaire
+            WHERE user_id = %s
+        """, (user_id,))
+        questionnaire_result = cursor.fetchone()
+
+        if not metadata_result:
+            print("No metadata found so we need to refresh")
+            return True 
+
+        if not questionnaire_result:
+            print("No questionnaire date found but they have recommendations which is interesting")
+            return True 
+        
+        recs_updated = metadata_result['recs_updated']
+        prefs_updated = questionnaire_result['prefs_updated']
+        print(f"Timestamps for rec_updated: {recs_updated} and prefs_updated: {prefs_updated}")
+
+        # If preferences were updated after recommendations 
+        if prefs_updated > recs_updated:
+            print("Preferences were updated after recommendations so refresh them")
+            return True
+        
+        # Else update recs if they are older than 24 hours 
+        refresh_threshold = datetime.now() - timedelta(hours=24)
+        should_refresh = recs_updated < refresh_threshold
+        
+        if should_refresh:
+            print("Recommendations are older than 24 hours so  refresh")
+        else:
+            print("Recommendations are up to date")
+        
+        # This is to prevent the deadlock 
+        wait_period = datetime.now() - timedelta(seconds=10)
+        if recs_updated and recs_updated > wait_period:
+            print("Recommendations were updated in the last 10 seconds so no more pls")
+            return False 
+            
+        return should_refresh
+    except Exception as e:
+        print(f"Error occured in the refresh function: {e}")
+        return True 
+    finally:
+        cursor.close()
+        connection.close()
 
 if __name__ == "__main__":
     print("Starting Flask server...")
