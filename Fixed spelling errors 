@@ -82,7 +82,7 @@ Activities:
  - Create a feedback page/option to allow users to give feedback on recommendations
  - Improve current recommender system 
 
- 24/03/2025 - 02/03/2025
+ 24/02/2025 - 02/03/2025
  Activities: 
  - Implemented a recommendation page for displaying movie recommendations with filtering capabilities  
  - Created a responsive landing page with animated elements
@@ -94,3 +94,22 @@ Activities:
  - Creating a feedback page for recommendations
  - Start writing my dissertation, starting with the introduction 
  - Create a watchlist page where user can add movies they've watched 
+
+03/03/2025 - 07/04/2025
+Activities:
+- Implemented watchlist functionality
+- Implemented movie page
+- Implemented movie detail page
+Challenges:
+- Preventing exposure of the TMDB API key on frontend when calling for metadata using the proxy endpoint
+- UI/UX design of each implemented page, ensuring visual appeal
+- Creating responsive design for the movie detail page so it displays correctly when window is resized (still working on this)
+- Resolving movie_id mismatches between my database and TMDB API that cause movies retrieved from the database to display incorrectly in the frontend due to different IDs
+- Implementing an infinite scrolling option on the movie page (may implement once all features are completed)
+Next steps:
+- Improving design of existing pages (authentication pages, homepage, and questionnaire page)
+- Reducing the fetching time of the /movies endpoint
+- Enhancing basic content-based recommendation system to incorporate watchlist data and other features
+- Creating recommendation feedback mechanism to verify recommendation quality
+- Utilizing more advanced algorithms/techniques beyond TF-IDF and cosine similarity
+- Integrating NLP techniques into search functionality and recommendations
