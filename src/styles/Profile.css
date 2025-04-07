@@ -1,5 +1,5 @@
 .main-profile-content {
-  height: 450px;
+  height: auto;
   /*Blured background image similar to Netflix */
   background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/public/images/netflix.jpg');
   background-size: cover;
@@ -61,4 +61,16 @@
   height: 105px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.secondary-main-content button {
+  margin-left: 20px;
+}
+
+.secondary-main-content h3 {
+  margin-bottom: 15px;
+}
+
+#logout-button {
+  margin-left: 20px;
 }

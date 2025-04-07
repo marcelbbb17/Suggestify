@@ -1,8 +1,13 @@
 import React from 'react';
 import "../styles/Movie_Card.css";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 
 const Movie_Card = ({ movie }) => {
   const imgBaseURL = "https://image.tmdb.org/t/p/w500"; 
+  const navigate = useNavigate(); 
+  console.log("Movie card received movie:", movie);  
+  console.log("Movie ID in card:", movie?.movie_id); 
   
   // Release date 
   const formatDate = (dateString) => {
@@ -20,10 +25,40 @@ const Movie_Card = ({ movie }) => {
     return releaseDate > threeMonthsAgo;
   };
 
+  // watchlist function
+  const addToWatchlist = async (e) => {
+    // prevents navigating to movie details if "add to watchlist" is clicked
+    e.stopPropagation();
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://127.0.0.1:5000/watchlist', {
+        movie_id: movie.movie_id,
+        status: 'want_to_watch'
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Added to watchlist!');
+    } catch (error) {
+      console.error('Error adding to watchlist:', error);
+      alert('Failed to add to watchlist');
+    }
+  };
+
+  // Navigates to movie details page when card is clicked
+  const handleCardClick = () => {
+    if (movie.movie_id) {
+      navigate(`/movie/${movie.movie_id}`);
+    } else if (movie.id) {
+      navigate(`/movie/${movie.id}`);
+    } else {
+      console.error("No valid ID found for this movie:", movie);
+    }
+  };
+
   return (
-    <div className="movie-card">
+    <div className="movie-card" onClick={handleCardClick}> 
       <img
-        src={movie.poster_path ? `${imgBaseURL}${movie.poster_path}` : "If it fails it fails"} // Add a fallback image later
+        src={movie.poster_path ? `${imgBaseURL}${movie.poster_path}` : "If it fails it fails"} 
         alt={movie.title}
       />
       {isNew() && <div className="movie-badge">NEW</div>}
@@ -33,8 +68,7 @@ const Movie_Card = ({ movie }) => {
         <div className="movie-meta">
           <div className="movie-genres">
             {movie.genres && movie.genres.length > 0 
-            // Two genre because the card is small
-              ? movie.genres.slice(0, 2).join(", ") 
+              ? movie.genres.slice(0, 2).join(", ") || movie.genres.name.slice(0,2).join(", ") 
               : "Unknown"}
           </div>
           {movie.vote_average && (
@@ -43,7 +77,12 @@ const Movie_Card = ({ movie }) => {
             </div>
           )}
         </div>
-        <p><small>{formatDate(movie.release_date)}</small></p>
+        <p><small>{formatDate(movie.release_date)}</small></p>      
+        <div className="card-actions">
+          <button onClick={addToWatchlist} className="watchlist-btn">
+            Add to Watchlist
+          </button>
+        </div>
       </div>
     </div>
   );

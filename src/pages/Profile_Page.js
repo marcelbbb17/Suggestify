@@ -35,9 +35,9 @@ function Profile_Page() {
         <div className="logo">Suggestify</div>
         <nav>
           <ul>
-            <li><a href="#movies">Movies</a></li>
-            <li><a href="#trending">Trending</a></li>
-            <li><a href="#watchlist">Watchlist</a></li>
+            <li><Link to="/movies">Movies</Link></li>
+            <li><Link to="/recommended">Recommended</Link></li>
+            <li><Link to="/watchlist">Watchlist</Link></li>
             <li><Link to="/homepage">Home</Link></li>
           </ul>
         </nav>
@@ -66,8 +66,8 @@ function Profile_Page() {
 
         <div className="secondary-main-content">
           <h3>See Your Recommended Movies Below</h3>
-          <button className="submit-button" onClick={handleRecommendationPage}> Recommended Movies </button>
-        <button className="submit-button" onClick={handleLogout}>Logout</button>
+          <button className="submit-button" id="rec-button" onClick={handleRecommendationPage}> Recommended Movies </button>
+          <button className="submit-button" id="logout-button" onClick={handleLogout}>Logout</button>
         </div>
       </section>
 

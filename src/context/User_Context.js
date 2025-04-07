@@ -31,8 +31,7 @@ export function UserProvider({ children }) {
     localStorage.removeItem("username");
     localStorage.removeItem("profilePicture")
     setUsername(null)
-    navigate("/app")
-
+    navigate("/")
   };
 
   return (

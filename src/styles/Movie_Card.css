@@ -86,6 +86,7 @@
   border-radius: 4px;
   font-weight: bold;
   font-size: 0.85rem;
+  width: 61px;
 }
 
 .movie-genres {
@@ -111,4 +112,32 @@
 .movie-card:hover .movie-badge {
   opacity: 1;
   transform: translateY(0);
+}
+
+.card-actions {
+  margin-top: 15px;
+  width: 100%;
+}
+
+.watchlist-btn {
+  background-color: #aa3030;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, transform 0.2s;
+  width: 100%;
+  opacity: 1;
+  z-index: 10;
+}
+
+.watchlist-btn:hover {
+  background-color: #cc3a3a;
+  transform: scale(1.05);
+}
+
+.movie-info {
+  padding-bottom: 30px;
 }

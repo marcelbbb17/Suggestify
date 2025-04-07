@@ -8,6 +8,9 @@ import Profile_Page from '../pages/Profile_Page';
 import Questionnaire from '../pages/Questionnaire';
 import RecommendedMovies from '../pages/Recommended_movies';
 import LandingPage from '../pages/LandingPage';
+import Watchlist from '../pages/Watchlist';
+import Movies from '../pages/Movies';
+import MovieDetail from '../pages/MovieDetails';
 
 function Home() {
   return (
@@ -81,9 +84,12 @@ function App() {
           <Route path="/login" element={<Login />}/>
           <Route path="/signin" element={<Signin />}/>
           <Route path='/homepage' element={<Homepage/>}/>
-          <Route path="/profile" element={<Profile_Page/>} /* Consider renaming this component to ProfilePage *//>
+          <Route path="/profile" element={<Profile_Page/>}/>
           <Route path='/questionnaire' element={<Questionnaire/>}/>
           <Route path="/recommended" element={<RecommendedMovies/>}/>
+          <Route path="/watchlist" element={<Watchlist/>}/>
+          <Route path="/movies" element={<Movies/>}/>
+          <Route path="/movie/:movieId" element={<MovieDetail/>}/>
         </Routes>
       </BrowserRouter>
     </UserProvider>

@@ -62,9 +62,9 @@ const Recommended_movies = () => {
         <div className="logo">Suggestify</div>
         <nav>
           <ul>
+            <li><Link to="/movies">Movies</Link></li>
             <li><Link to="/homepage">Home</Link></li>
-            <li><Link to="#trending">Trending</Link></li>
-            <li><Link to="#watchlist">Watchlist</Link></li>
+            <li><Link to="/watchlist">Watchlist</Link></li>
             <li><Link to="/profile">Profile</Link></li>
           </ul>
         </nav>
