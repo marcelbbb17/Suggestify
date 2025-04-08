@@ -50,6 +50,10 @@ const Movies = () => {
         });
 
         const results = await Promise.all(requests);
+
+        if (results.length > 0 && results[0].data.length > 0) {
+          console.log("Movie data from API:", results[0].data[0])
+        }
         
         // Get and update results 
         const newMoviesState = { ...movies };

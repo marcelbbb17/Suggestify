@@ -156,6 +156,25 @@
   margin: 20px 0;
 }
 
+.watchlist-btn.added {
+  background-color: #2ecc71; 
+  cursor: default;
+}
+
+.watchlist-btn.added:hover {
+  background-color: #2ecc71;
+  transform: none;
+}
+
+.watchlist-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.watchlist-btn:disabled:hover {
+  transform: none;
+}
+
 @media (max-width: 768px) {
   .movies-hero {
     height: 200px;
