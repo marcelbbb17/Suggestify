@@ -113,3 +113,12 @@ Next steps:
 - Creating recommendation feedback mechanism to verify recommendation quality
 - Utilizing more advanced algorithms/techniques beyond TF-IDF and cosine similarity
 - Integrating NLP techniques into search functionality and recommendations
+
+08/04/2025 
+Activities:
+- Resolved an issue on the movie page where movies couldn't be added to the watchlist.
+- Introduced a visual "added" indicator on movie cards for movies added to the watchlist.
+Challenges:
+- Determining how to manage varying movie ID formats​
+Next Steps:
+- Develop and integrate a system for user reviews and feedback for recommendation
