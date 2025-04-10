@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from datetime import datetime, timedelta, timezone
+from threading import Lock
 import requests
 import bcrypt 
 import re 
@@ -13,6 +14,7 @@ import jwt
 import os 
 import numpy as np
 import ast
+import time
 
 app = Flask(__name__)
 CORS(app)  
@@ -41,6 +43,97 @@ def token_required(function):
         # returns the email to the original function 
         return function(current_user, *args, **kwargs)
     return decorated
+
+@app.route("/recommendation-feedback", methods=["POST"])
+@token_required
+def save_recommendation_feedback(current_user):
+    data = request.json
+    feedback = data.get("feedback")
+
+    if not feedback:
+        return jsonify({"error": "No feedback provided"}), 400
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        # Get user ID from email
+        cursor.execute("SELECT id FROM users WHERE email = %s", (current_user,))
+        user_result = cursor.fetchone()
+
+        if not user_result:
+            return jsonify({"error": "User not found"}), 404
+        
+        user_id = user_result[0]
+
+        # Check if user already has a feedback record
+        cursor.execute("""
+            SELECT id FROM recommendation_feedback 
+            WHERE user_id = %s
+        """, (user_id,))
+
+        user_current_feedback = cursor.fetchone()
+
+        if user_current_feedback:
+            # Update feedback
+            cursor.execute("""
+                UPDATE recommendation_feedback 
+                SET feedback_value = %s, feedback_date = NOW() 
+                WHERE user_id = %s
+            """, (feedback, user_id))
+            cursor.fetchall()
+        else:
+            # Save feedback
+            cursor.execute("""
+                INSERT INTO recommendation_feedback 
+                (user_id, feedback_value, feedback_date) 
+                VALUES (%s, %s, NOW())
+            """, (user_id, feedback)) 
+            cursor.fetchall()       
+        connection.commit()
+        return jsonify({"success": "Feedback saved successfully"}), 200
+    except Exception as e:
+        connection.rollback()
+        print(f"Error saving recommendation feedback {str(e)}")
+        return jsonify({"error": "Failed to save feeback"}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.route("/refresh-recommendations", methods=["POST"])
+@token_required
+def refresh_recommendations(current_user):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    try:
+        # Get user ID from email
+        cursor.execute("SELECT id FROM users WHERE email = %s", (current_user,))
+        user_result = cursor.fetchone()
+        
+        if not user_result:
+            return jsonify({"error": "User not found"}), 404
+        
+        user_id = user_result[0]
+        
+        # Changes last_updated to be more that 24 hours to refresh recs
+        cursor.execute("""
+            UPDATE user_recommendations_metadata 
+            SET last_updated = DATE_SUB(NOW(), INTERVAL 25 HOUR) 
+            WHERE user_id = %s
+        """, (user_id,))
+        
+        connection.commit()
+        
+        # Calls the recommend enpoint to generate new recs (Will implement this later)
+        return recommend_movies(current_user)
+    except Exception as e:
+        connection.rollback()
+        print(f"Error refreshing recommendations: {str(e)}")
+        return jsonify({"error": "Failed to refresh recommendations"}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
 # Used for raw TMBD data 
 @app.route("/proxy", methods=["GET"])
@@ -402,6 +495,34 @@ def movies(current_user):
     print(len(all_movies))    
     return jsonify({"movies" : all_movies})
 
+# Used to track ongoing recs generations
+user_recommendation_locks = {}
+lock_mutex = Lock()
+
+# Function to check and set locks for users 
+def check_and_set_lock(user_id):
+    with lock_mutex:
+        # Check if user already has a lock
+        if user_id in user_recommendation_locks:
+            # Check if the lock is stale (older than 5 minutes)
+            current_time = time.time()
+            lock_time = user_recommendation_locks[user_id]
+            if current_time - lock_time > 300:  # 5 minutes timeout
+                print(f"Found stale lock for user {user_id}, resetting")
+                user_recommendation_locks[user_id] = current_time
+                return True
+            return False
+        else:
+            # Set a new lock with current timestamp
+            user_recommendation_locks[user_id] = time.time()
+            return True
+
+# Function to release a lock
+def release_lock(user_id):
+    with lock_mutex:
+        if user_id in user_recommendation_locks:
+            del user_recommendation_locks[user_id]
+
 @app.route("/recommend", methods=["GET"])
 @token_required
 def recommend_movies(current_user):
@@ -409,6 +530,7 @@ def recommend_movies(current_user):
 
     connection = get_db_connection()
     cursor = connection.cursor()
+    user_id = None
 
     try: 
         # gets the user ID from email
@@ -423,11 +545,11 @@ def recommend_movies(current_user):
         cursor.close()
         connection.close()
 
-        # Check if we need to refresh recommendation 
-        need_to_refresh = should_refresh_recommendations(user_id)
-
-        if not need_to_refresh:
-            print("No need to refresh recommendation. Returning Stored recommendations")
+        # Check if recommendations are already being generated for this user
+        if not check_and_set_lock(user_id):
+            print(f"Recs generation in progress for user {user_id}")
+            
+            # If recommendations are already being generated, return the stored recommendations with a status
             stored_recs = get_stored_recommendations(user_id)
             if stored_recs:
                 for rec in stored_recs:
@@ -437,59 +559,99 @@ def recommend_movies(current_user):
                     except:
                         rec['genres'] = []
                         rec['actors'] = [] 
-                print(f"returning {len(stored_recs)} stored movies")    
-                return jsonify({"recommended_movies" : stored_recs}) 
-        
-        # If 24 hours passed or the user hasnt generated recs
-        print("Generating New Recommendations") 
-        user_preferences = get_user_preferences(current_user)
-    
-        # Converts favourite movies from database into a list
-        favorite_movies = user_preferences.get("favourite_movies", [])
-        if isinstance(favorite_movies, str):
-            try:
-                favorite_movies = ast.literal_eval(favorite_movies)
-            except Exception as e:
-                print("Error converting preferences", e)
-                favorite_movies = []
-    
-        # Get movies that match user preferences
-        candidate_movies = fetch_movies_for_user(current_user, user_preferences)
-    
-        if not favorite_movies:
-            return jsonify({"error": "No movies match user preference :( )"}), 404
-
-        valid_favorite_profiles = []
-        for fav_movie in favorite_movies:
-            match = next((m["profile"] for m in candidate_movies if m["title"].lower() == fav_movie.lower()), None)
-            if match:
-                valid_favorite_profiles.append(match)
+                print(f"Returning {len(stored_recs)} stored movies while generation is in progress")    
+                return jsonify({
+                    "recommended_movies": stored_recs, 
+                    "status": "generating"
+                })
             else:
-                fetched_profile = fecth_missing_movie(fav_movie)
-                if fetched_profile:
-                    valid_favorite_profiles.append(fetched_profile)
+                return jsonify({
+                    "recommended_movies": [], 
+                    "status": "generating"
+                })
+
+        try:
+            # Check if we need to refresh recommendation 
+            need_to_refresh = should_refresh_recommendations(user_id)
+
+            if not need_to_refresh:
+                print("No need to refresh recommendation. Returning Stored recommendations")
+                release_lock(user_id)  # Release the lock since we're returning stored recommendations
+                stored_recs = get_stored_recommendations(user_id)
+                if stored_recs:
+                    for rec in stored_recs:
+                        try:
+                            rec['genres'] = ast.literal_eval(rec['genres'])
+                            rec['actors'] = ast.literal_eval(rec['actors'])
+                        except:
+                            rec['genres'] = []
+                            rec['actors'] = [] 
+                    print(f"returning {len(stored_recs)} stored movies")    
+                    return jsonify({"recommended_movies": stored_recs}) 
+            
+            # If 24 hours passed or the user hasn't generated recs
+            print("Generating New Recommendations") 
+            user_preferences = get_user_preferences(current_user)
+            
+            # Converts favourite movies from database into a list
+            favorite_movies = user_preferences.get("favourite_movies", [])
+            if isinstance(favorite_movies, str):
+                try:
+                    favorite_movies = ast.literal_eval(favorite_movies)
+                except Exception as e:
+                    print("Error converting preferences", e)
+                    favorite_movies = []
+            
+            # Get movies that match user preferences
+            candidate_movies = fetch_movies_for_user(current_user, user_preferences)
+            
+            if not favorite_movies:
+                release_lock(user_id)  # Release lock before returning error
+                return jsonify({"error": "No movies match user preference :( )"}), 404
+
+            valid_favorite_profiles = []
+            for fav_movie in favorite_movies:
+                match = next((m["profile"] for m in candidate_movies if m["title"].lower() == fav_movie.lower()), None)
+                if match:
+                    valid_favorite_profiles.append(match)
                 else:
-                    print(f"'{fav_movie}' did not return a valid profile.")
+                    fetched_profile = fecth_missing_movie(fav_movie)
+                    if fetched_profile:
+                        valid_favorite_profiles.append(fetched_profile)
+                    else:
+                        print(f"'{fav_movie}' did not return a valid profile.")
 
-        if not valid_favorite_profiles:
-            return jsonify({"error": "No valid favorite movie profiles found"}), 404
+            if not valid_favorite_profiles:
+                release_lock(user_id)  # Release lock before returning error
+                return jsonify({"error": "No valid favorite movie profiles found"}), 404
 
-        candidate_profiles = [movie["profile"] for movie in candidate_movies]
-        similarity_scores = compute_tfidf_similarity(candidate_profiles, valid_favorite_profiles, user_preferences)
-    
-        # Pass favorite_movies to exclude already-watched movies.
-        recommended_movies = get_top_recommendations(similarity_scores, candidate_movies, favorite_titles=favorite_movies, top_n=20)
+            candidate_profiles = [movie["profile"] for movie in candidate_movies]
+            similarity_scores = compute_tfidf_similarity(candidate_profiles, valid_favorite_profiles, user_preferences)
+            
+            # Pass favorite_movies to exclude already-watched movies.
+            recommended_movies = get_top_recommendations(similarity_scores, candidate_movies, favorite_titles=favorite_movies, top_n=20)
 
-        # Save the recs to database
-        saved = save_recommendations(user_id, recommended_movies)
-        if not saved:
-            print("Fauled to save recommendations")
-        print([movie["original_title"] for movie in recommended_movies])
-        return jsonify({"recommended_movies": recommended_movies})
+            # Save the recs to database
+            saved = save_recommendations(user_id, recommended_movies)
+            if not saved:
+                print("Failed to save recommendations")
+                
+            # Release the lock after successful completion
+            release_lock(user_id)
+            
+            print(f"Successfully generated {len(recommended_movies)} recommendations")
+            return jsonify({"recommended_movies": recommended_movies})
+        except Exception as e:
+            print(f"Error during recommendation generation: {e}")
+            # Make sure to release the lock in case of error
+            release_lock(user_id)
+            raise e
     except Exception as e:
+        # If we have a user_id, make sure to release any lock
+        if user_id:
+            release_lock(user_id)
         print(f"Error in recommend_movies: {e}")
-        return jsonify({"error": "An error occured gathering recommendations"}), 500
-
+        return jsonify({"error": "An error occurred gathering recommendations"}), 500
 
 
 def isValidEmail(email):
@@ -1051,19 +1213,13 @@ def should_refresh_recommendations(user_id):
         should_refresh = recs_updated < refresh_threshold
         
         if should_refresh:
-            print("Recommendations are older than 24 hours so  refresh")
+            print("Recommendations are older than 24 hours so refresh")
         else:
             print("Recommendations are up to date")
-        
-        # This is to prevent the deadlock 
-        wait_period = datetime.now() - timedelta(seconds=10)
-        if recs_updated and recs_updated > wait_period:
-            print("Recommendations were updated in the last 10 seconds so no more pls")
-            return False 
             
         return should_refresh
     except Exception as e:
-        print(f"Error occured in the refresh function: {e}")
+        print(f"Error occurred in the refresh function: {e}")
         return True 
     finally:
         cursor.close()
