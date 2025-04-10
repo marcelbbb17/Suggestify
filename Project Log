@@ -122,3 +122,17 @@ Challenges:
 - Determining how to manage varying movie ID formats​
 Next Steps:
 - Develop and integrate a system for user reviews and feedback for recommendation
+
+10/04/2025
+Activities:
+- Implemented concurrent request handling to prevent database deadlock during recommendation
+- Allowed user to rate their recommendations based on wether they think its good or bad (for now)
+Challenges:
+- Handling race conditions between frontend and backend 
+- Making sure locks are released during error conditions 
+- Implementin proper timeouts for processes running for long 
+- Managing asynchronous request states in React
+Next Steps:
+- Implement a more advanced search function 
+- Improve UI for pages 
+- Improve current recommendation system 
