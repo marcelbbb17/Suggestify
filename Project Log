@@ -136,3 +136,16 @@ Next Steps:
 - Implement a more advanced search function 
 - Improve UI for pages 
 - Improve current recommendation system 
+
+11/04/2025
+Activities:
+- Added search functionality to movie page, allwoing users to search for movies 
+- Redesigned the homepage to display popular movie and trending movies as well as making it consistent with other pages
+- Prevented multiple api calls everytime a movie card loaded on screen which made things a lot slower 
+Challenges 
+- Fixing inconsistent responsive issue in the homepage 
+- Resolving performance inssues with movie card and /watchlist endpoint 
+- Improving design of homepage while maintaining consistent design
+Next Steps:
+- Start implementing advanced search function
+- Improve current recommendation system 
