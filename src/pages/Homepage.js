@@ -1,55 +1,68 @@
-import React, { useState } from 'react';
-import { Link } from "react-router-dom";
-import {useUser} from "../context/User_Context";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from "react-router-dom";
+import { useUser } from "../context/User_Context";
 import axios from "axios";
 import Movie_Card from "../components/Movie_Card";
+import "../styles/Homepage.css";
 
 function Homepage() {
-  const {username} = useUser();
-  const [searchQuery, setSearchQuery] = useState("")
-  const [searchResults, setSearchResults] = useState([])
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchError, setSearchError] = useState("");
-  const [showResults, setShowResults] = useState(false);
+  const { username } = useUser();
+  const navigate = useNavigate();
+  const [featuredMovies, setFeaturedMovies] = useState([]);
+  const [trendingMovies, setTrendingMovies] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleSearch = async (e) => {
-    e.preventDefault()
+  useEffect(() => {
+    const fetchMoviesData = async () => {
+      setIsLoading(true);
+      setError(null);
 
-    // If search query is empy return nothing
-    if (!searchQuery.trim()) {
-      return;
-    }
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
 
-    setIsSearching(true)
-    setShowResults(true)
-    setSearchError("")
+        // Fetch trending movies
+        const trendingResponse = await axios.get(
+          'http://127.0.0.1:5000/proxy?url=https://api.themoviedb.org/3/trending/movie/week&page=1',
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`http://127.0.0.1:5000/search?query=${encodeURIComponent(searchQuery)}`, {
-        headers: {Authorization: `Bearer ${token}`}
-      });
-      const results = response.data.results || [];
-      setSearchResults(results);
-    } 
-    catch (error) {
-      setSearchError("Failed to search for movie");
-      setSearchResults([]);
-    }
-    finally {
-      setIsSearching(false);
-    }
+        // Fetch popular movies 
+        const popularResponse = await axios.get(
+          'http://127.0.0.1:5000/proxy?url=https://api.themoviedb.org/3/movie/popular&page=1',
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        // Set the data
+        setTrendingMovies(trendingResponse.data.results?.slice(0, 6) || []);
+        setFeaturedMovies(popularResponse.data.results?.slice(0, 8) || []);
+      } catch (error) {
+        console.error('Error fetching movies for homepage:', error);
+        setError('Failed to load movies. Please try refreshing the page.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMoviesData();
+  }, [navigate]);
+
+  // Function to navigate to recommendations page
+  const goToRecommendations = () => {
+    navigate('/recommended');
   };
 
-  const clearSearch = () => {
-    setSearchQuery("");
-    setSearchResults([]);
-    setShowResults(false)
-  }
-  
+  // Function to navigate to movies page
+  const browseAllMovies = () => {
+    navigate('/movies');
+  };
+
   return (
-    /* Basic Structure for logged in homepage */   
-    <div className="background">
+    <div className="homepage background">
       <header>
         <div className="logo">Suggestify</div>
         <nav>
@@ -61,77 +74,87 @@ function Homepage() {
           </ul>
         </nav>
         <div className="username">
-          {/* Displays user username */}
           <p>Hello, {username || ":("}</p>
         </div>
       </header>
-  
+
+      {/* Hero section */}
       <section className="main">
         <div className="main-content">
-          <h1>Discover Your Next Favorite Movie</h1>
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="search-form">
-            <input
-              type="text"
-              className="search-bar"
-              placeholder="Search for movies..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit" className="submit-button" id='search-button'>Search</button>
-            {showResults && (
-              <button type="button" className="submit-button" onClick={clearSearch}> clear </button>
-            )}
-          </form>
+          <h1>Welcome to Suggestify</h1>
+          <p>Discover personalised recommendations, trending films, and build your watchlist</p>
+          <div className="hero-buttons">
+            <button className="primary-btn" onClick={goToRecommendations}>View Your Recommendations</button>
+            <button className="secondary-btn" onClick={browseAllMovies}>Browse All Movies</button>
+          </div>
         </div>
       </section>
 
-      {/* Search results after user searches for movies */}
-      {showResults && (
-        <section className="search-results">
-          <div className="search-results-header">
-            <h2>Search Results</h2>
-            {searchResults.length > 0 && (
-              <p>Found {searchResults.length} results for "{searchQuery}"</p>
-            )}
-          </div>
-          
-          {isSearching ? (
-            <div className="loading">Searching...</div>
-          ) : searchError ? (
-            <div className="error">{searchError}</div>
-          ) : searchResults.length === 0 ? (
-            <div className="no-results">No movies found matching your search.</div>
-          ) : (
-            <div className="search-grid">
-              {searchResults.map(movie => (
+      {/* Content sections */}
+      {isLoading ? (
+        <div className="loading-section">
+          <div className="loading-spinner"></div>
+          <p>Loading content...</p>
+        </div>
+      ) : error ? (
+        <div className="error-section">
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()} className="retry-btn">Try Again</button>
+        </div>
+      ) : (
+        <>
+          {/* Popular Movies Section */}
+          <section id="popular" className="movies-section">
+            <div className="section-header">
+              <h2>Popular Movies</h2>
+              <Link to="/movies" className="see-all-link">See All</Link>
+            </div>
+            <div className="movie-grid">
+              {featuredMovies.map(movie => (
                 <Movie_Card key={movie.id} movie={movie} />
               ))}
             </div>
-          )}
-        </section>
+          </section>
+
+          {/* Trending Movies Section */}
+          <section id="trending" className="movies-section">
+            <div className="section-header">
+              <h2>Trending Now</h2>
+              <Link to="/movies" className="see-all-link">See All</Link>
+            </div>
+            <div className="movie-grid">
+              {trendingMovies.map(movie => (
+                <Movie_Card key={movie.id} movie={movie} />
+              ))}
+            </div>
+          </section>
+
+          {/* Quick Links Section */}
+          <section className="quick-links-section">
+            <div className="quick-link-card">
+              <div className="quick-link-icon">🎬</div>
+              <h3>Your Watchlist</h3>
+              <p>Track movies you want to watch and those you've already seen</p>
+              <Link to="/watchlist" className="quick-link-btn">Go to Watchlist</Link>
+            </div>
+            
+            <div className="quick-link-card">
+              <div className="quick-link-icon">🎯</div>
+              <h3>Personalised Recommendations</h3>
+              <p>Discover movies tailored just for you based on your preferences</p>
+              <Link to="/recommended" className="quick-link-btn">View Recommendations</Link>
+            </div>
+            
+            <div className="quick-link-card">
+              <div className="quick-link-icon">🔍</div>
+              <h3>Find Movies</h3>
+              <p>Search and browse through our extensive collection of films</p>
+              <Link to="/movies" className="quick-link-btn">Browse Movies</Link>
+            </div>
+          </section>
+        </>
       )}
-  
-      <section id="recommended" className="movies-section">
-        <h2>Recommended For You</h2>
-        <div className="movie-grid">
-          <div className="movie">Movie 1</div>
-          <div className="movie">Movie 2</div>
-          <div className="movie">Movie 3</div>
-          <div className="movie">Movie 4</div>
-        </div>
-      </section>
-  
-      <section id="trending" className="movies-section">
-        <h2>Trending Movies</h2>
-        <div className="movie-grid">
-          <div className="movie">Movie 5</div>
-          <div className="movie">Movie 6</div>
-          <div className="movie">Movie 7</div>
-          <div className="movie">Movie 8</div>
-        </div>
-      </section>
-  
+
       <footer>
         <p>&copy; 2024 Suggestify. All rights reserved.</p>
       </footer>

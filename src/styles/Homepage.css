@@ -1,0 +1,363 @@
+/* Integrating with existing styles */
+.homepage {
+  min-height: 100vh;
+  color: #f0f0f0;
+}
+
+/* Keep the background styling that all pages have */
+.background {
+  background-color: #121212;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #333;
+  z-index: 100;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: bold;
+  color: #e50914;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+}
+
+nav ul li {
+  margin-right: 20px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #f0f0f0;
+  transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+  color: #e50914;
+}
+
+.username p {
+  font-weight: 500;
+}
+
+/* Hero Section using existing main styles */
+.main {
+  height: 400px;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/public/images/netflix.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-content {
+  text-align: center;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.main-content h1 {
+  font-size: 2.8rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.main-content p {
+  font-size: 1.3rem;
+  margin-bottom: 40px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* New hero buttons */
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.primary-btn, .secondary-btn {
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  border: none;
+}
+
+.primary-btn {
+  background-color: #e50914;
+  color: white;
+}
+
+.secondary-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  backdrop-filter: blur(5px);
+}
+
+.primary-btn:hover, .secondary-btn:hover {
+  transform: translateY(-3px);
+}
+
+.primary-btn:hover {
+  background-color: #f40612;
+}
+
+.secondary-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Loading and Error States */
+.loading-section, .error-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  border-top-color: #e50914;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-section p {
+  margin-top: 20px;
+  font-size: 1.1rem;
+  color: #ccc;
+}
+
+.error-section p {
+  margin-bottom: 20px;
+  color: #ff8080;
+  font-size: 1.1rem;
+}
+
+.retry-btn {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.retry-btn:hover {
+  background-color: #f40612;
+}
+
+/* Movies Sections (Popular and Trending) */
+.movies-section {
+  padding: 30px 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.section-header h2 {
+  font-size: 1.8rem;
+  position: relative;
+  display: inline-block;
+}
+
+.section-header h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: #e50914;
+}
+
+.see-all-link {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.see-all-link:hover {
+  color: #e50914;
+}
+
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  justify-items: center;
+  margin: 0 auto;
+}
+
+/* Quick Links Section */
+.quick-links-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.quick-link-card {
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  padding: 30px;
+  text-align: center;
+  transition: transform 0.3s ease;
+  border: 1px solid #333;
+}
+
+.quick-link-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.quick-link-icon {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.quick-link-card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+  color: #e50914;
+}
+
+.quick-link-card p {
+  color: #ccc;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.quick-link-btn {
+  display: inline-block;
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.quick-link-btn:hover {
+  background-color: #e50914;
+}
+
+/* Footer */
+footer {
+  padding: 30px 20px;
+  text-align: center;
+  background-color: #1e1e1e;
+  border-top: 1px solid #333;
+  color: #ccc;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .main {
+    height: 400px;
+  }
+  
+  .main-content h1 {
+    font-size: 2.5rem;
+  }
+  
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    height: 350px;
+  }
+  
+  .main-content h1 {
+    font-size: 2rem;
+  }
+  
+  .main-content p {
+    font-size: 1.1rem;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .primary-btn, .secondary-btn {
+    width: 100%;
+  }
+  
+  .movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .quick-links-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    flex-direction: column;
+    padding: 15px;
+  }
+  
+  .logo {
+    margin-bottom: 10px;
+  }
+  
+  nav ul {
+    margin-bottom: 10px;
+  }
+  
+  nav ul li {
+    margin-right: 15px;
+  }
+  
+  .main {
+    height: 300px;
+  }
+  
+  .main-content h1 {
+    font-size: 1.6rem;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

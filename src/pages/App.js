@@ -1,6 +1,7 @@
 import '../styles/App.css';
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { UserProvider } from "../context/User_Context"; 
+import { WatchlistProvider } from "../context/Watchlist_Context"; // Add this import
 import Login from "../pages/Login";
 import Signin from "../pages/Signin";
 import Homepage from '../pages/Homepage';
@@ -77,21 +78,23 @@ function App() {
   // Routing logic for homepage, login, and sign up pages
   return (
     <UserProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />}/>
-          <Route path="/app" element={<Home />}/>
-          <Route path="/login" element={<Login />}/>
-          <Route path="/signin" element={<Signin />}/>
-          <Route path='/homepage' element={<Homepage/>}/>
-          <Route path="/profile" element={<Profile_Page/>}/>
-          <Route path='/questionnaire' element={<Questionnaire/>}/>
-          <Route path="/recommended" element={<RecommendedMovies/>}/>
-          <Route path="/watchlist" element={<Watchlist/>}/>
-          <Route path="/movies" element={<Movies/>}/>
-          <Route path="/movie/:movieId" element={<MovieDetail/>}/>
-        </Routes>
-      </BrowserRouter>
+      <WatchlistProvider> {/* Add WatchlistProvider here */}
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LandingPage />}/>
+            <Route path="/app" element={<Home />}/>
+            <Route path="/login" element={<Login />}/>
+            <Route path="/signin" element={<Signin />}/>
+            <Route path='/homepage' element={<Homepage/>}/>
+            <Route path="/profile" element={<Profile_Page/>}/>
+            <Route path='/questionnaire' element={<Questionnaire/>}/>
+            <Route path="/recommended" element={<RecommendedMovies/>}/>
+            <Route path="/watchlist" element={<Watchlist/>}/>
+            <Route path="/movies" element={<Movies/>}/>
+            <Route path="/movie/:movieId" element={<MovieDetail/>}/>
+          </Routes>
+        </BrowserRouter>
+      </WatchlistProvider>
     </UserProvider>
   );
 }

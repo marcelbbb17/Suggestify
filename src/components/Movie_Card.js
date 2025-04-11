@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import "../styles/Movie_Card.css";
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; 
+import { useWatchlist } from '../context/Watchlist_Context';
 
 const Movie_Card = ({ movie }) => {
   const imgBaseURL = "https://image.tmdb.org/t/p/w500"; 
   const navigate = useNavigate(); 
-  const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { isInWatchlist, addToWatchlist } = useWatchlist();
   
   const getMovieId = () => {
     return movie.movie_id || movie.id;
@@ -29,67 +29,25 @@ const Movie_Card = ({ movie }) => {
     return releaseDate > threeMonthsAgo;
   };
 
-  // Checks if movie is already in watchlist
-  useEffect(() => {
-    const checkWatchlistStatus = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          return;
-        }
-  
-        const response = await axios.get('http://127.0.0.1:5000/watchlist', {
-          headers: { Authorization: `Bearer ${token}`}
-        });
-  
-        const watchlistItems = response.data.watchlist || [];
-        const movieId = getMovieId();
-  
-        // Checks whether the movie exists in watchlist
-        const inWatchlist = watchlistItems.some(item => 
-          (item.movie_id === movieId) || (parseInt(item.movie_id) === parseInt(movieId))
-        );
-        
-        setIsInWatchlist(inWatchlist);
-      } catch (error) {
-        console.error("Error determining item status", error);
-      }
-    };
-    
-    checkWatchlistStatus();
-  }, [movie]);
+  // Use the movieId to check if it's in the watchlist
+  const movieId = getMovieId();
+  const movieInWatchlist = isInWatchlist(movieId);
 
   // watchlist function
-  const addToWatchlist = async (e) => {
+  const handleAddToWatchlist = async (e) => {
     // prevents navigating to movie details if "add to watchlist" is clicked
     e.stopPropagation();
     
     // Don't do anything if already in watchlist
-    if (isInWatchlist) {
+    if (movieInWatchlist) {
       return;
     }
     
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem('token');
-      // Handles the missmatch between movie ids 
-      const movieId = getMovieId();
-
-      if (!movieId) {
-        console.error("No valid movie id format for:", movie);
-        alert("Error: Could not find the correct movie ID")
-        return;
-      }
-
-      await axios.post('http://127.0.0.1:5000/watchlist', {
-        movie_id: movieId,
-        status: 'want_to_watch'
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      setIsInWatchlist(true);
+      // Use context function to add to watchlist
+      await addToWatchlist(movieId, 'want_to_watch');
     } catch (error) {
       console.error('Error adding to watchlist:', error);
       alert('Failed to add to watchlist');
@@ -100,10 +58,9 @@ const Movie_Card = ({ movie }) => {
 
   // Navigates to movie details page when card is clicked
   const handleCardClick = () => {
-    const movieId = getMovieId();
     if (movieId) {
       navigate(`/movie/${movieId}`);
-    } else{
+    } else {
       console.error("No valid ID found for this movie:", movie)
     }
   };
@@ -133,11 +90,11 @@ const Movie_Card = ({ movie }) => {
         <p><small>{formatDate(movie.release_date)}</small></p>      
         <div className="card-actions">
           <button 
-            onClick={addToWatchlist} 
-            className={`watchlist-btn ${isInWatchlist ? 'added' : ''}`}
-            disabled={isLoading || isInWatchlist}
+            onClick={handleAddToWatchlist} 
+            className={`watchlist-btn ${movieInWatchlist ? 'added' : ''}`}
+            disabled={isLoading || movieInWatchlist}
           >
-            {isLoading ? 'Adding...' : isInWatchlist ? 'Added ✓' : 'Add to Watchlist'}
+            {isLoading ? 'Adding...' : movieInWatchlist ? 'Added ✓' : 'Add to Watchlist'}
           </button>
         </div>
       </div>

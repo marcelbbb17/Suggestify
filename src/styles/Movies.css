@@ -5,7 +5,7 @@
 }
 
 .movies-hero {
-  height: 250px;
+  height: 300px;
   background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)), url('/public/images/netflix.jpg');
   background-size: cover;
   background-position: center;
@@ -14,11 +14,12 @@
   align-items: center;
   text-align: center;
   position: relative;
+  padding: 0 20px;
 }
 
 .hero-content {
   max-width: 800px;
-  padding: 0 20px;
+  width: 100%;
 }
 
 .hero-content h1 {
@@ -34,6 +35,86 @@
 .hero-content p {
   font-size: 1.2rem;
   opacity: 0.9;
+  margin-bottom: 25px;
+}
+
+/* Search form styling */
+.search-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 25px auto;
+  max-width: 600px;
+  gap: 15px;
+}
+
+.search-bar {
+  flex: 1;
+  padding: 12px 15px;
+  height: 45px;
+  border-radius: 30px;
+  border: none;
+  font-size: 16px;
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+  width: 100%;
+}
+
+
+.submit-button, .clear-button {
+  display: inline-block; 
+  width: 150px;
+  height: 40px;
+  line-height: 40px; 
+  text-align: center; 
+  color: #fff;
+  text-decoration: none; 
+  background: #1e1e1e;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.submit-button:hover {
+  background: rgb(170, 48, 48);
+  transform: scale(1.2);
+}
+.clear-button {
+  background-color: #333;
+  color: white;
+}
+
+.clear-button:hover {
+  background-color: #444;
+  transform: scale(1.2);
+}
+
+/* Search results styling */
+.search-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 20px;
+}
+
+.search-results-header h2 {
+  font-size: 1.8rem;
+  position: relative;
+  display: inline-block;
+}
+
+.search-results-header h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: #aa3030;
 }
 
 .categories-container {
@@ -177,7 +258,7 @@
 
 @media (max-width: 768px) {
   .movies-hero {
-    height: 200px;
+    height: 350px;
   }
   
   .hero-content h1 {
@@ -188,6 +269,19 @@
     font-size: 1rem;
   }
   
+  .search-form {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .search-bar {
+    width: 100%;
+  }
+  
+  .submit-button, .clear-button {
+    width: 100%;
+  }
+  
   .movies-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
@@ -196,6 +290,12 @@
   .category-tab {
     padding: 12px 15px;
     font-size: 0.9rem;
+  }
+  
+  .search-results-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 }
 
