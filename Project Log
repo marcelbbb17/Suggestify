@@ -145,6 +145,18 @@ Activities:
 Challenges 
 - Fixing inconsistent responsive issue in the homepage 
 - Resolving performance inssues with movie card and /watchlist endpoint 
+
+12/04/2025 - 14/04/2025
+Activities:
+- Refactored the backend
+- Enhancing the lock function for better error handling  
+- Improving general error handling in most functions
+Challenges
+- Placing each function in app.py in their own files while making sure no problems occur
+- Creating folders and files for each route for readability 
+Next Steps:
+- Start implementing advanced searcg functionality 
+- Start improving current recommender system
 - Improving design of homepage while maintaining consistent design
 Next Steps:
 - Start implementing advanced search function
