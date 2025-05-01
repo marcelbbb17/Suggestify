@@ -1,25 +1,25 @@
 16/12/2024 - 22/12/2024
 17/12/2024
 Activities: 
-- Updated the orginal login/sigin in buttons to fit the backgorund of hompage and make it look nicer
+- Updated the original login/sigin in buttons to fit the background of hompage and make it look nicer
 - Added flask for the backend 
-- Created basic struture of login page but needs some css for styling
+- Created basic struture of login page but needs some CSS for styling
 Challenges:
 - Learning and understanding React Router for navigation
 Next Steps: 
-- Complete login/signup pages, including css styling
+- Complete login/signup pages, including CSS styling
 - Start working on user authentication functionality 
 
 23/12/2024 - 29/12/2024
 23/12/2024
 Activities: 
-- Updated the login and signin pages with css
+- Updated the login and signin pages with CSS
 - Linked "Create Account" button with signin page 
 Challenges: 
 - Issues with the background image not covering the entire screen 
 Next Steps:
-- Figure out how I am going to allows user to access the homepage 
-- Display the user's username after login in 
+- Figure out how I am going to allow users to access the homepage 
+- Display the user's username after logging in 
 - Start working on user authentication functionality
 
 20/01/2025 - 26/01/2025
@@ -39,9 +39,9 @@ Activities:
 - Created questionnaire page
 - Fixed state persistance issues 
 Challenges: 
-- Learning and implementing JWT and undertsanding what it does and how it works in my applications 
-- Preventing the same user being enetered multiple time in the database after completing the questionnaire
-- Saving both the users' profile picture and username so that it doesn't dissapear when the user refreshes the page
+- Learning and implementing JWT and understanding what it does and how it works in my applications 
+- Preventing the same user being entered multiple time in the database after completing the questionnaire
+- Saving both the users' profile picture and username so that it doesn't disappear when the user refreshes the page
 Next Steps: 
 - Start implementing a content based recommender system 
 - Start looking and understanding the TMBD API
@@ -76,7 +76,7 @@ Activities:
  Challenges/Feedback 
  - Redefine my motivation as to why im building this project 
  - Improve current recommender system by using more complex algorithms 
- - Allow users to validate thier recommendation to determine whether a recommendation is good or not 
+ - Allow users to validate their recommendation to determine whether a recommendation is good or not 
  Next Steps:
  - Integrate the current recommender system to the frontend 
  - Create a feedback page/option to allow users to give feedback on recommendations
@@ -89,7 +89,7 @@ Activities:
  - Stored recommendations in the database to prevent excessive API calls
  Challenges: 
  - Understanding and using CSS animation 
- - Fixind a database deadloack issue causing the /recommend endpoint to be called twice whenever user navigated to the recommendation page
+ - Fixing a database deadlock issue causing the /recommend endpoint to be called twice whenever user navigated to the recommendation page
  Next Steps:
  - Creating a feedback page for recommendations
  - Start writing my dissertation, starting with the introduction 
@@ -105,7 +105,7 @@ Challenges:
 - UI/UX design of each implemented page, ensuring visual appeal
 - Creating responsive design for the movie detail page so it displays correctly when window is resized (still working on this)
 - Resolving movie_id mismatches between my database and TMDB API that cause movies retrieved from the database to display incorrectly in the frontend due to different IDs
-- Implementing an infinite scrolling option on the movie page (may implement once all features are completed)
+- Implementing an infinite scrolling option on the movie page (may implement this once all features are completed)
 Next steps:
 - Improving design of existing pages (authentication pages, homepage, and questionnaire page)
 - Reducing the fetching time of the /movies endpoint
@@ -126,11 +126,11 @@ Next Steps:
 10/04/2025
 Activities:
 - Implemented concurrent request handling to prevent database deadlock during recommendation
-- Allowed user to rate their recommendations based on wether they think its good or bad (for now)
+- Allowed user to rate their recommendations based on whether they think its good or bad (for now)
 Challenges:
 - Handling race conditions between frontend and backend 
 - Making sure locks are released during error conditions 
-- Implementin proper timeouts for processes running for long 
+- Implementing proper timeouts for processes running for long 
 - Managing asynchronous request states in React
 Next Steps:
 - Implement a more advanced search function 
@@ -139,7 +139,7 @@ Next Steps:
 
 11/04/2025
 Activities:
-- Added search functionality to movie page, allwoing users to search for movies 
+- Added search functionality to movie page, allowing users to search for movies 
 - Redesigned the homepage to display popular movie and trending movies as well as making it consistent with other pages
 - Prevented multiple api calls everytime a movie card loaded on screen which made things a lot slower 
 Challenges 
@@ -155,7 +155,7 @@ Challenges
 - Placing each function in app.py in their own files while making sure no problems occur
 - Creating folders and files for each route for readability 
 Next Steps:
-- Start implementing advanced searcg functionality 
+- Start implementing advanced searhg functionality 
 - Start improving current recommender system
 - Improving design of homepage while maintaining consistent design
 
@@ -167,7 +167,8 @@ Next Steps:
 - Created a user preference model that learns from user feedback  
 - Added a feedback mechanism on the recommendation page allowing users to give overall feedback on the recommendations as well as movie-specific feedback  
 - Improved the speed of the `/movies` endpoint and implemented caching to store the fetched movies  
-- Fixed styling inconsistencies  
+- Fixed styling inconsistencies 
+- Pushed and merged the master branch with main branch successfully 
  Challenges:
 - Implementing a recommender system that learns from user behaviour  
 - Using the watchlist as part of the recommendation process without causing problems  
