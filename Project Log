@@ -111,7 +111,7 @@ Next steps:
 - Reducing the fetching time of the /movies endpoint
 - Enhancing basic content-based recommendation system to incorporate watchlist data and other features
 - Creating recommendation feedback mechanism to verify recommendation quality
-- Utilizing more advanced algorithms/techniques beyond TF-IDF and cosine similarity
+- Utilising more advanced algorithms/techniques beyond TF-IDF and cosine similarity
 - Integrating NLP techniques into search functionality and recommendations
 
 08/04/2025 
@@ -158,6 +158,21 @@ Next Steps:
 - Start implementing advanced searcg functionality 
 - Start improving current recommender system
 - Improving design of homepage while maintaining consistent design
-Next Steps:
-- Start implementing advanced search function
-- Improve current recommendation system 
+
+15/04/2025 – 01/05/2025
+ Activities:
+- Created a sophisticated recommender system that learns from users over time as they interact with the system  
+- Created a recommendation explanation and insights page to give users more details on why certain movies were recommended  
+- Created a disliked movies page where users can view their disliked movies  
+- Created a user preference model that learns from user feedback  
+- Added a feedback mechanism on the recommendation page allowing users to give overall feedback on the recommendations as well as movie-specific feedback  
+- Improved the speed of the `/movies` endpoint and implemented caching to store the fetched movies  
+- Fixed styling inconsistencies  
+ Challenges:
+- Implementing a recommender system that learns from user behaviour  
+- Using the watchlist as part of the recommendation process without causing problems  
+- Preventing "filter bubbles" where users would be recommended movies too similar to what they already like, with no diversity in the suggestions  
+- Balancing performance and precision for the `/movies` endpoint (the more pages traversed, the longer the fetch time and the more movies retrieved)  
+- Implementing helpful explanation features that allow users to understand the recommender system and how it works without diving into the code  
+ Next Steps:
+- Prepare the codebase for final submission  
