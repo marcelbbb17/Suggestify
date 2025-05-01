@@ -220,7 +220,7 @@ function Watchlist() {
         <nav>
           <ul>
             <li><Link to="/movies">Movies</Link></li>
-            <li><Link to="/recommended">Recommendations</Link></li>
+            <li><Link to="/recommended">Recommended</Link></li>
             <li><Link to="/profile">Profile</Link></li>
             <li><Link to="/homepage">Home</Link></li>
           </ul>

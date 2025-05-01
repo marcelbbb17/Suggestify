@@ -1,0 +1,223 @@
+.disliked-page {
+  min-height: 100vh;
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+.disliked-hero {
+  height: 200px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)), url('/public/images/netflix.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.hero-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  background: linear-gradient(45deg, #ff4d4d, #ff8080);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.disliked-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.info-text {
+  font-size: 1.1rem;
+  color: #ccc;
+  line-height: 1.5;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 30px;
+}
+
+.disliked-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  justify-items: center;
+  margin-bottom: 40px;
+}
+
+.disliked-card-container {
+  position: relative;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.remove-dislike-btn {
+  margin-top: 10px;
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.remove-dislike-btn:hover {
+  background-color: #aa3030;
+}
+
+.disliked-info {
+  margin-top: 5px;
+  font-size: 0.8rem;
+  color: #aaa;
+  text-align: center;
+}
+
+.dislike-date {
+  font-style: italic;
+}
+
+.refresh-note {
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.refresh-note h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #e50914;
+}
+
+.refresh-note p {
+  margin-bottom: 15px;
+  color: #ccc;
+}
+
+.btn-primary {
+  display: inline-block;
+  background-color: #aa3030;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #cc3a3a;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.empty-state h2 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  max-width: 600px;
+  margin-bottom: 20px;
+  color: #ccc;
+  line-height: 1.5;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 40px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  border-top-color: #e50914;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.loading-spinner-text {
+  color: #ccc;
+  font-size: 1.1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  text-align: center;
+  padding: 40px;
+  background-color: rgba(170, 30, 30, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(170, 30, 30, 0.3);
+  color: #ff8080;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .disliked-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+  
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .disliked-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .disliked-card-container {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .hero-content h1 {
+    font-size: 1.6rem;
+  }
+  
+  .info-text {
+    font-size: 1rem;
+  }
+}

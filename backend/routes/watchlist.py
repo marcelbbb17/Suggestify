@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from database import get_db_connection
 from utils.auth_utils import token_required
-from utils.movie_utils import fetch_movie, parse_list_from_db
+from utils.movie_utils import fetch_movie, parse_list_from_db, get_actors
 import ast
 
 watchlist_bp = Blueprint('watchlist', __name__)
@@ -216,6 +216,97 @@ def delete_from_watchlist(current_user, movie_id):
         connection.rollback()
         print(f"An error occurred when removing movie from watchlist: {str(e)}")
         return jsonify({"error": "Failed to remove movie from watchlist"}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+def get_user_watchlist_preferences(user_id):
+    """ Gets preferences from user's watchlist """
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    try:
+        # Get watched movies from watchlist
+        cursor.execute("""
+            SELECT movie_id, user_rating, status, notes
+            FROM user_watchlist 
+            WHERE user_id = %s 
+        """, (user_id,))
+        
+        all_watchlist_items = cursor.fetchall()
+
+        # Separate movies liked, watched, and want to watch
+        liked_movies = [movie for movie in all_watchlist_items if movie.get('user_ratings') is not None and float(movie.get('user_rating', 0)) >= 7] 
+        watched_movies = [movie for movie in all_watchlist_items if movie.get('status') == 'watched']
+        want_to_watch_movies = [movie for movie in all_watchlist_items if movie.get('status') == 'want_to_watch']
+        
+        # Get movie ids
+        liked_movie_ids = [movie['movie_id'] for movie in liked_movies]
+        watched_movies_ids = [movie['movie_id'] for movie in watched_movies]
+        want_to_watch_movies_ids = [movie['movie_id'] for movie in want_to_watch_movies]
+
+        # get movie ids for all movie to exclude during recommendation
+        all_watchlist_items_movie_ids = [movie['movie_id'] for movie in all_watchlist_items]
+
+        liked_genres = set()
+        liked_actors = set()
+
+        if liked_movie_ids:
+            # First try to get genres and actors from recommendations table (reduces api cals)
+            placeholders = ', '.join(['%s'] * len(liked_movie_ids))
+            cursor.execute(f"""
+                SELECT movie_id, genres, actors
+                FROM user_recommendations
+                WHERE movie_id IN ({placeholders}) AND user_id = %s
+            """, (*liked_movie_ids, user_id))
+            
+            recs_data = cursor.fetchall()
+            
+            # Keep track of movies we found
+            found_movie_ids = set()
+            
+            # Process the genres and actors from recommendations
+            for movie in recs_data:
+                try:
+                    movie_genres = parse_list_from_db(movie['genres'])
+                    movie_actors = parse_list_from_db(movie['actors'])
+                    liked_genres.update(movie_genres)
+                    liked_actors.update(movie_actors)
+                    found_movie_ids.add(movie['movie_id'])
+                except:
+                    continue
+            
+            # For movies not found in recommendations, fetch from TMDB API
+            missing_movie_ids = [id for id in liked_movie_ids if id not in found_movie_ids]
+            
+            for movie_id in missing_movie_ids:
+                try:
+                    # Fetch movie details from TMDB API
+                    movie_info = fetch_movie(movie_id)
+                    if movie_info:
+                        # Extract and add genres
+                        if 'genres' in movie_info:
+                            for genre in movie_info['genres']:
+                                liked_genres.add(genre['name'])
+                        
+                        # Fetch and add actors
+                        actors = get_actors(movie_id)
+                        liked_actors.update(actors)
+                except Exception as e:
+                    print(f"Error fetching data for movie {movie_id}: {e}")
+                    continue
+        
+        return {
+            'all_watchlist_items': all_watchlist_items,
+            'all_watchlist_movie_ids':all_watchlist_items_movie_ids,
+            'liked_movies': liked_movies,
+            'watched_movies': watched_movies,
+            'want_to_watch_movies': want_to_watch_movies,
+            'liked_genres': list(liked_genres),
+            'liked_actors': list(liked_actors),
+            'watched_movie_ids': want_to_watch_movies_ids,
+            'want_to_watch_movie_ids': want_to_watch_movies_ids
+        }
     finally:
         cursor.close()
         connection.close()

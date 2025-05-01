@@ -31,16 +31,6 @@ const LandingPage = () => {
     }
   ];
   
-  // Placeholeder to replace with actucal movies from trending section of TMBD
-  const movieColors = [
-    '#e50914', 
-    '#221f1f', 
-    '#4169e1', 
-    '#8b0000', 
-    '#2e8b57',
-    '#483d8b', 
-  ];
-  
   // Animation effect 
   useEffect(() => {
     setIsVisible(true);
@@ -81,19 +71,6 @@ const LandingPage = () => {
             <h2>{features[currentFeatureIndex].title}</h2>
             <p>{features[currentFeatureIndex].description}</p>
           </div>
-        </section>
-        
-        <section className="poster-showcase">
-          {movieColors.map((color, index) => (
-            <div 
-              key={index} 
-              className="movie-poster" 
-              style={{
-                backgroundColor: color,
-                animationDelay: `${index * 0.2}s`
-              }}
-            />
-          ))}
         </section>
         
         <section className="benefits-section">
@@ -137,13 +114,6 @@ const LandingPage = () => {
 
       <footer className="landing-footer">
         <p>&copy; 2024 Suggestify. All rights reserved.</p>
-        {/* Will implement these features last cus theyre not that important */}
-        <div className="footer-links">
-          <a href="/about">About</a>
-          <a href="/privacy">Privacy</a>
-          <a href="/terms">Terms</a>
-          <a href="/contact">Contact</a>
-        </div>
       </footer>
     </div>
   );

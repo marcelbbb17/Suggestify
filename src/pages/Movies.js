@@ -133,7 +133,7 @@ const Movies = () => {
         <nav>
           <ul>
             <li><Link to="/homepage">Home</Link></li>
-            <li><Link to="/recommended">Recommendations</Link></li>
+            <li><Link to="/recommended">Recommended</Link></li>
             <li><Link to="/watchlist">Watchlist</Link></li>
             <li><Link to="/profile">Profile</Link></li>
           </ul>

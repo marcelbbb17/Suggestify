@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useUser } from '../context/User_Context';
 import '../styles/MovieDetails.css';
+import RecommendationExplanation from '../components/RecommendationExplanation';
 
 const MovieDetails = () => {
   const { movieId } = useParams();
@@ -210,7 +211,7 @@ const MovieDetails = () => {
           <nav>
             <ul>
               <li><Link to="/homepage">Home</Link></li>
-              <li><Link to="/recommended">Recommendations</Link></li>
+              <li><Link to="/recommended">Recommended</Link></li>
               <li><Link to="/watchlist">Watchlist</Link></li>
               <li><Link to="/profile">Profile</Link></li>
             </ul>
@@ -220,7 +221,8 @@ const MovieDetails = () => {
           </div>
         </header>
         <div className="loading-container">
-          <div className="loading-spinner">Loading movie details...</div>
+          <div className="loading-spinner"></div>
+          <p>Loading movie details...</p>
         </div>
       </div>
     );
@@ -337,10 +339,10 @@ const MovieDetails = () => {
                             return 'Want to Watch'
                           } else if (watchlistStatus === "watching") {
                             return 'Watching'
-                          }else {
+                          } else {
                             return 'Watched'
                           }
-                        })
+                        })()
                       }
                     </div>
                     <div className="status-buttons">
@@ -366,7 +368,7 @@ const MovieDetails = () => {
                   </div>
                 )}
                 
-                {watchlistStatus === 'watched' && (
+                {watchlistStatus === 'watched' ? (
                   <div className="rating-container">
                     <div className="rating-label">Your Rating:</div>
                     <div className="rating-stars">
@@ -381,6 +383,8 @@ const MovieDetails = () => {
                       ))}
                     </div>
                   </div>
+                ) : (
+                  <RecommendationExplanation movieId={movieId} />
                 )}
               </div>
             </div>

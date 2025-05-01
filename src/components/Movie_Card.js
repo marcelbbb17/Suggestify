@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import "../styles/Movie_Card.css";
 import { useNavigate } from 'react-router-dom'; 
 import { useWatchlist } from '../context/Watchlist_Context';
+import MovieFeedback from '../components/MovieFeedback'
 
-const Movie_Card = ({ movie }) => {
+const Movie_Card = ({ movie, showFeedback = false }) => {
   const imgBaseURL = "https://image.tmdb.org/t/p/w500"; 
   const navigate = useNavigate(); 
   const [isLoading, setIsLoading] = useState(false);
   const { isInWatchlist, addToWatchlist } = useWatchlist();
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   
   const getMovieId = () => {
     return movie.movie_id || movie.id;
@@ -56,6 +58,12 @@ const Movie_Card = ({ movie }) => {
     }
   };
 
+  // Toggle feedback form visibility
+  const toggleFeedback = (e) => {
+    e.stopPropagation(); 
+    setShowFeedbackForm(!showFeedbackForm);
+  };
+
   // Navigates to movie details page when card is clicked
   const handleCardClick = () => {
     if (movieId) {
@@ -66,38 +74,62 @@ const Movie_Card = ({ movie }) => {
   };
 
   return (
-    <div className="movie-card" onClick={handleCardClick}> 
-      <img
-        src={movie.poster_path ? `${imgBaseURL}${movie.poster_path}` : "/images/no-poster.jpg"} 
-        alt={movie.title}
-      />
-      {isNew() && <div className="movie-badge">NEW</div>}
-      <div className="movie-info">
-        <h3>{movie.title}</h3>
-        <p>{movie.overview || "No description available."}</p>
-        <div className="movie-meta">
-          <div className="movie-genres">
-            {movie.genres && movie.genres.length > 0 
-              ? movie.genres.slice(0, 2).join(", ")
-              : "Unknown"}
-          </div>
-          {movie.vote_average && (
-            <div className="movie-rating">
-              ★ {Number(movie.vote_average).toFixed(1)}
+    <div className="movie-card-container">
+      <div className="movie-card" onClick={handleCardClick}> 
+        <img
+          src={movie.poster_path ? `${imgBaseURL}${movie.poster_path}` : "/images/no-poster.jpg"} 
+          alt={movie.title}
+        />
+        {isNew() && <div className="movie-badge">NEW</div>}
+        <div className="movie-info">
+          <h3>{movie.title}</h3>
+          <p>{movie.overview || "No description available."}</p>
+          <div className="movie-meta">
+            <div className="movie-genres">
+              {movie.genres && movie.genres.length > 0 
+                ? movie.genres.slice(0, 2).join(", ")
+                : "Unknown"}
             </div>
-          )}
-        </div>
-        <p><small>{formatDate(movie.release_date)}</small></p>      
-        <div className="card-actions">
-          <button 
-            onClick={handleAddToWatchlist} 
-            className={`watchlist-btn ${movieInWatchlist ? 'added' : ''}`}
-            disabled={isLoading || movieInWatchlist}
-          >
-            {isLoading ? 'Adding...' : movieInWatchlist ? 'Added ✓' : 'Add to Watchlist'}
-          </button>
+            {movie.vote_average && (
+              <div className="movie-rating">
+                ★ {Number(movie.vote_average).toFixed(1)}
+              </div>
+            )}
+          </div>
+          <p><small>{formatDate(movie.release_date)}</small></p>      
+          <div className="card-actions">
+            <button 
+              onClick={handleAddToWatchlist} 
+              className={`watchlist-btn ${movieInWatchlist ? 'added' : ''}`}
+              disabled={isLoading || movieInWatchlist}
+            >
+              {isLoading ? 'Adding...' : movieInWatchlist ? 'Added ✓' : 'Add to Watchlist'}
+            </button>
+            
+            {showFeedback && (
+              <button 
+                onClick={toggleFeedback} 
+                className="feedback-toggle-btn"
+              >
+                {showFeedbackForm ? 'Hide Feedback' : 'Rate This Recommendation'}
+              </button>
+            )}
+          </div>
         </div>
       </div>
+      
+      {/* Feedback form outside the clickable card area */}
+      {showFeedback && showFeedbackForm && (
+        <div className="movie-feedback-wrapper" onClick={(e) => e.stopPropagation()}>
+          <MovieFeedback 
+            movieId={movieId} 
+            onFeedbackSaved={() => {
+              // Auto-hide the form after feedback is submitted
+              setTimeout(() => setShowFeedbackForm(false), 2000);
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

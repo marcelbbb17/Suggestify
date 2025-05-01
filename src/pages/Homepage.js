@@ -38,7 +38,7 @@ function Homepage() {
         );
 
         // Set the data
-        setTrendingMovies(trendingResponse.data.results?.slice(0, 6) || []);
+        setTrendingMovies(trendingResponse.data.results?.slice(0, 8) || []);
         setFeaturedMovies(popularResponse.data.results?.slice(0, 8) || []);
       } catch (error) {
         console.error('Error fetching movies for homepage:', error);

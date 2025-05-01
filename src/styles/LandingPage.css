@@ -178,33 +178,6 @@ body {
   color: rgba(255, 255, 255, 0.8);
 }
 
-.poster-showcase {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  padding: 2rem 0;
-  overflow: hidden;
-  background-color: var(--dark-gray);
-}
-
-.movie-poster {
-  width: 150px;
-  height: 225px;
-  background-size: cover;
-  background-position: center;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s ease;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeIn 0.5s forwards, float 6s infinite alternate;
-}
-
-.movie-poster:hover {
-  transform: scale(1.05) translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-}
-
 .benefits-section {
   padding: 5rem 2rem;
   background-color: var(--secondary-color);
@@ -290,7 +263,7 @@ body {
 
 .landing-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 2rem 3rem;
   background-color: var(--dark-gray);

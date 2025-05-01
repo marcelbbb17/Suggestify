@@ -75,7 +75,6 @@ function Login() {
           <label for="check">Remember me</label>
         </section>
         <section id="forgot-password">
-          <Link id="forgot-password-link" to="/forgot">Forgot Password</Link>
         </section>
       </div>
       <div className="input-submit">

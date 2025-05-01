@@ -8,10 +8,48 @@ import '../styles/Recommended_movies.css';
 
 const RecommendationFeedback = ({ onRefresh, onSaveFeedback }) => {
   const [feedbackValue, setFeedbackValue] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
   
-  const handleFeedback = (value) => {
-    setFeedbackValue(value);
-    onSaveFeedback(value);
+  const handleFeedback = async (value) => {
+    try {
+      setIsSubmitting(true);
+      setFeedbackValue(value);
+      setError(null);
+      
+      const success = await onSaveFeedback(value);
+      
+      if (!success) {
+        // If parent component indicates failure, try direct submission as fallback
+        console.log('Falling back to direct feedback submission');
+        const token = localStorage.getItem("token");
+        const response = await axios.post(
+          "http://127.0.0.1:5000/recommendation-feedback", 
+          {
+            feedback: value,
+            overall: true 
+          }, 
+          {
+            headers: { 
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        console.log('Direct feedback submission response:', response.data);
+      }
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      setError("Failed to save your feedback. Please try again.");
+      
+      if (error.response) {
+        console.error('Response error data:', error.response.data);
+        console.error('Response error status:', error.response.status);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
@@ -21,24 +59,35 @@ const RecommendationFeedback = ({ onRefresh, onSaveFeedback }) => {
         <button 
           className={`feedback-btn ${feedbackValue === 'good' ? 'active' : ''}`}
           onClick={() => handleFeedback('good')}
+          disabled={isSubmitting}
         >
           👍 Good Recommendations
         </button>
         <button 
           className={`feedback-btn ${feedbackValue === 'bad' ? 'active' : ''}`}
           onClick={() => handleFeedback('bad')}
+          disabled={isSubmitting}
         >
           👎 Not What I Expected
         </button>
       </div>
+      
+      {error && <p className="error-message">{error}</p>}
+      
       {feedbackValue === 'bad' && (
-        <button className="refresh-btn" onClick={onRefresh}>
+        <button 
+          className="refresh-btn" 
+          onClick={onRefresh}
+          disabled={isSubmitting}
+        >
           Generate New Recommendations
         </button>
       )}
+      
+      {isSubmitting && <p>Saving your feedback...</p>}
     </div>
   );
-};
+}
 
 const Recommended_movies = () => {
   const {username} = useUser();
@@ -46,24 +95,52 @@ const Recommended_movies = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [overallFeedbackSubmitted, setOverallFeedbackSubmitted] = useState(false);
   const requestInProgressRef = useRef(false);
   const retryTimeoutRef = useRef(null);
 
   const handleSaveFeedback = async (feedbackValue) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://127.0.0.1:5000/recommendation-feedback", {
-        feedback: feedbackValue
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
+    
+      console.log('Sending overall feedback request:', {
+        feedback: feedbackValue,
+        overall: true
       });
-      
+    
+      const response = await axios.post(
+        "http://127.0.0.1:5000/recommendation-feedback", 
+        {
+          feedback: feedbackValue,
+          overall: true 
+        }, 
+        {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+    
+      console.log('Overall feedback response:', response.data);
+    
+      setOverallFeedbackSubmitted(true);
+
       // Show confirmation to the user
       if (feedbackValue === 'good') {
         alert('Thanks for your feedback! We\'ll use this to improve future recommendations.');
       }
+      return true;
     } catch (error) {
       console.error("Error saving feedback:", error);
+    
+      if (error.response) {
+        console.error('Response error data:', error.response.data);
+        console.error('Response error status:', error.response.status);
+      }
+    
+      alert("Failed to save feedback. Please try again.");
+      return false;
     }
   };
 
@@ -128,10 +205,22 @@ const Recommended_movies = () => {
     };
   }, []);
 
-  // Function to manually refresh recommendations will implement full version later
-  const refreshRecommendations = () => {
+  // Function to manually refresh recommendations
+  const refreshRecommendations = async () => {
     if (!requestInProgressRef.current) {
-      fetchRecommendations();
+      try {
+        const token = localStorage.getItem("token");
+        // Call the refresh endpoint first
+        await axios.post("http://127.0.0.1:5000/refresh-recommendations", {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        // Then fetch new recommendations
+        fetchRecommendations();
+      } catch (error) {
+        console.error("Error refreshing recommendations:", error);
+        alert("Failed to refresh recommendations. Please try again.");
+      }
     }
   };
 
@@ -191,7 +280,8 @@ const Recommended_movies = () => {
           ))}
         </div>
       </div>
-      {!isLoading && !error && movies.length > 0 && (
+      
+      {!isLoading && !error && movies.length > 0 && !overallFeedbackSubmitted && (
         <div className="feedback-container">
           <RecommendationFeedback 
             onSaveFeedback={handleSaveFeedback} 
@@ -199,11 +289,12 @@ const Recommended_movies = () => {
           />
         </div>
       )}
+      
       <section className="recommendations-section">
         {isLoading ? (
-          <div className="loading-spinner">
+          <div className="loading-spinner-for-rec">
             <p>Loading your recommendations... This might take a while</p>
-            <div className="spinner-animation"></div>
+            <div className="spinner-animation-for-rec"></div>
           </div>
         ) : error ? (
           <div className="error-message">
@@ -222,7 +313,11 @@ const Recommended_movies = () => {
             {filteredMovies.length > 0 ? (
               <div className="recommendations-grid">
                 {filteredMovies.map(movie => (
-                  <MovieCard key={movie.id || movie.movie_id} movie={movie} />
+                  <MovieCard 
+                    key={movie.id || movie.movie_id} 
+                    movie={movie} 
+                    showFeedback={true} 
+                  />
                 ))}
               </div>
             ) : (
@@ -238,6 +333,8 @@ const Recommended_movies = () => {
         <div className="info-card">
           <h3>How We Recommend</h3>
           <p>Our recommendations are based on your questionnaire responses, viewing history, and ratings.</p>
+          <Link to="/recommendation-insights" className="insights-btn">View Recommendation Insights</Link>
+          <Link to="/disliked-recommendations" className="update-btn" id='disliked-btn'>View Disliked Movies</Link>
         </div>
         <div className="info-card">
           <h3>Update Preferences</h3>
