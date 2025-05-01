@@ -1,0 +1,39 @@
+.signup-form {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-width: 100vh;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/public/images/netflix.jpg');
+  background-size: cover;
+  background-position: center;
+
+}
+
+.signup-header {
+  text-align: center;
+  margin: 50px 0px 40px 0px;
+}
+
+.signup-header h1 {
+  font-size: 40px;
+  height: 70px;
+  font-weight: 600;
+}
+
+.login-sigin-up-form-element {
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  width: 100%; 
+}
+
+.extra-space{
+  margin-left: 140px;
+
+}

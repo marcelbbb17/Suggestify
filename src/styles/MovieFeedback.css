@@ -1,0 +1,113 @@
+.movie-feedback {
+  background-color: #1e1e1e;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.movie-feedback p {
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: #f0f0f0;
+}
+
+.feedback-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.feedback-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.feedback-btn:hover {
+  transform: translateY(-2px);
+}
+
+.feedback-btn.good {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.feedback-btn.good:hover {
+  background-color: #27ae60;
+}
+
+.feedback-btn.bad {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.feedback-btn.bad:hover {
+  background-color: #c0392b;
+}
+
+.feedback-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.rating-stars {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.star {
+  font-size: 1.8rem;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.star:hover, 
+.star.filled {
+  color: #f1c40f;
+}
+
+.rating-value {
+  margin-left: 10px;
+  font-size: 1rem;
+  color: #bbb;
+}
+
+.submit-rating-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-rating-btn:hover {
+  background-color: #2980b9;
+}
+
+.submit-rating-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.movie-feedback.success {
+  background-color: rgba(46, 204, 113, 0.2);
+  border: 1px solid rgba(46, 204, 113, 0.4);
+  text-align: center;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}

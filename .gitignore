@@ -1,0 +1,19 @@
+# dependencies
+/node_modules
+.env
+
+npm-debug.log*
+
+# Python virtual environment
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE specific files
+.vscode/
+.idea/

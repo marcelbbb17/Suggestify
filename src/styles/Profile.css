@@ -1,0 +1,76 @@
+.main-profile-content {
+  height: auto;
+  /*Blured background image similar to Netflix */
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/public/images/netflix.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.profile-information{
+  margin-top: 35px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-information h1 {
+  margin-bottom: 20px;
+  align-items: center;
+  font-size: 35px;
+}
+
+.profile-information h2 {
+  margin-top: 5px;
+  font-size: 35px;
+  margin-bottom: 15px;
+}
+
+.profile-picture-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-picture-content img {
+  margin-bottom: 20px;
+}
+
+#questionnaire-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#questionnaire-section p {
+  margin-bottom: 25px;
+}
+
+#complete-questionnaire-button {
+  font-size: 12px;
+}
+
+#profile-picture {
+  width: 105px;
+  height: 105px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.secondary-main-content button {
+  margin-left: 20px;
+}
+
+.secondary-main-content h3 {
+  margin-bottom: 15px;
+}
+
+#logout-button {
+  margin-left: 20px;
+}
