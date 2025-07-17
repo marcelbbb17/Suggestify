@@ -35,8 +35,12 @@ def safe_initialize_nltk():
     global word_tokenize, stopwords, WordNetLemmatizer
     
     try:
-        home_dir = os.path.expanduser("~")
-        nltk_data_dir = os.path.join(home_dir, "nltk_data")
+        # Use Render's NLTK data directory if available, otherwise use home directory
+        if os.environ.get('RENDER'):
+            nltk_data_dir = '/opt/render/nltk_data'
+        else:
+            home_dir = os.path.expanduser("~")
+            nltk_data_dir = os.path.join(home_dir, "nltk_data")
         os.makedirs(nltk_data_dir, exist_ok=True)
         nltk.data.path.insert(0, nltk_data_dir)
         print(f"NLTK data directory set to: {nltk_data_dir}")
@@ -45,6 +49,7 @@ def safe_initialize_nltk():
     
     resources_available = {
         'punkt': False,
+        'punkt_tab': False,  # Add this for Render
         'stopwords': False,
         'wordnet': False
     }
@@ -56,6 +61,8 @@ def safe_initialize_nltk():
             try:
                 if resource == 'punkt':
                     nltk.data.find('tokenizers/punkt')
+                elif resource == 'punkt_tab':
+                    nltk.data.find('tokenizers/punkt_tab')
                 else:
                     nltk.data.find(f'corpora/{resource}')
                 resources_available[resource] = True
@@ -68,8 +75,8 @@ def safe_initialize_nltk():
         except Exception as e:
             print(f"Failed to download/find {resource}: {e}")
     
-    # Initialise tokenizer if punkt is available
-    if resources_available['punkt']:
+    # Initialise tokenizer if punkt OR punkt_tab is available
+    if resources_available['punkt'] or resources_available['punkt_tab']:
         try:
             from nltk.tokenize import word_tokenize as nltk_tokenize
             # Test it works
