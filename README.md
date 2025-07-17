@@ -3,7 +3,7 @@
 **Author:** Marcel Beya-Wa-Beya
 **Tech Stack:** React, Flask, MySQL, Python, JavaScript  
 **Live Demo:** Coming soon  
-**GitHub:** github.com/yourname/suggestify
+**GitHub:** github.com/marcelbbb17/Suggestify
 
 ---
 
@@ -62,8 +62,7 @@ suggestify/
 │   ├── pages/            
 │   └── styles/           
 │
-├── public/               
-├── .env.example          
+├── public/                         
 ├── package.json          
 └── README.md             
 ```
