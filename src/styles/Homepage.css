@@ -320,8 +320,8 @@ footer {
   }
   
   .movie-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 10px;
   }
   
   .quick-links-section {

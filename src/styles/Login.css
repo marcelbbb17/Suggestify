@@ -11,7 +11,7 @@
   background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/public/images/netflix.jpg');
   background-size: cover;
   background-position: center;
-  padding-bottom: 40px;
+  padding-bottom: 100px;
 }
 
 .login-header {
