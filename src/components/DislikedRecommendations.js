@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useUser } from '../context/User_Context';
 import MovieCard from '../components/Movie_Card'; 
 import '../styles/DislikedRecommendations.css';
+import { API_BASE_URL } from '../index';
 
 const DislikedRecommendations = () => {
   const { username } = useUser();
@@ -24,7 +25,7 @@ const DislikedRecommendations = () => {
           return;
         }
 
-        const response = await axios.get('http://127.0.0.1:5000/disliked-recommendations', {
+        const response = await axios.get(`${API_BASE_URL}/disliked-recommendations`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -35,7 +36,7 @@ const DislikedRecommendations = () => {
             try {
               // Fetch additional movie details from your proxy endpoint
               const movieDetails = await axios.get(
-                `http://127.0.0.1:5000/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movie.movie_id}`)}`,
+                `${API_BASE_URL}/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movie.movie_id}`)}`,
                 { headers: { Authorization: `Bearer ${token}` } }
               );
               
@@ -81,7 +82,7 @@ const DislikedRecommendations = () => {
       const token = localStorage.getItem('token');
       
       // Update the feedback to 'neutral'
-      await axios.post('http://127.0.0.1:5000/recommendation-feedback', {
+      await axios.post(`${API_BASE_URL}/recommendation-feedback`, {
         movie_id: movieId,
         feedback: 'neutral'
       }, {

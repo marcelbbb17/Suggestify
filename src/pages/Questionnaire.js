@@ -3,6 +3,7 @@ import "../styles/Questionnaire.css";
 import {useUser} from "../context/User_Context";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from '../index';
 
 
 function Questionnaire() {
@@ -38,7 +39,7 @@ function Questionnaire() {
     }
     try {
       const token = localStorage.getItem("token")
-      const response = await axios.post("http://127.0.0.1:5000/save_questionnaire", {
+      const response = await axios.post(`${API_BASE_URL}/save_questionnaire`, {
         favouriteMovies,
         genres,
         age,

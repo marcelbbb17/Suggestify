@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from '../index';
 
 const WatchlistContext = createContext();
 
@@ -30,7 +31,7 @@ export function WatchlistProvider({ children }) {
         return [];
       }
       
-      const response = await axios.get('http://127.0.0.1:5000/watchlist', {
+      const response = await axios.get(`${API_BASE_URL}/watchlist`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -64,7 +65,7 @@ export function WatchlistProvider({ children }) {
       const token = localStorage.getItem('token');
       if (!token) return false;
       
-      await axios.post('http://127.0.0.1:5000/watchlist', {
+      await axios.post(`${API_BASE_URL}/watchlist`, {
         movie_id: movieId,
         status,
         notes
@@ -89,7 +90,7 @@ export function WatchlistProvider({ children }) {
       const token = localStorage.getItem('token');
       if (!token) return false;
       
-      await axios.delete(`http://127.0.0.1:5000/watchlist/${movieId}`, {
+      await axios.delete(`${API_BASE_URL}/watchlist/${movieId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -110,7 +111,7 @@ export function WatchlistProvider({ children }) {
       const token = localStorage.getItem('token');
       if (!token) return false;
       
-      await axios.put(`http://127.0.0.1:5000/watchlist/${movieId}`, updates, {
+      await axios.put(`${API_BASE_URL}/watchlist/${movieId}`, updates, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

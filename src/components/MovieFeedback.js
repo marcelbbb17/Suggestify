@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles/MovieFeedback.css';
+import { API_BASE_URL } from '../index';
 
 const MovieFeedback = ({ movieId, onFeedbackSaved = () => {} }) => {
   const [feedback, setFeedback] = useState(null);
@@ -30,7 +31,7 @@ const MovieFeedback = ({ movieId, onFeedbackSaved = () => {} }) => {
       });
       
       const response = await axios.post(
-        'http://127.0.0.1:5000/recommendation-feedback',
+        `${API_BASE_URL}/recommendation-feedback`,
         {
           movie_id: movieId,
           feedback: value
@@ -73,7 +74,7 @@ const MovieFeedback = ({ movieId, onFeedbackSaved = () => {} }) => {
       });
       
       const response = await axios.post(
-        'http://127.0.0.1:5000/recommendation-feedback',
+        `${API_BASE_URL}/recommendation-feedback`,
         {
           movie_id: movieId,
           feedback: feedback,

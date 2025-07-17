@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import MovieCard from '../components/Movie_Card';
 import {useUser} from "../context/User_Context";
 import '../styles/Recommended_movies.css';
+import { API_BASE_URL } from '../index';
 
 
 const RecommendationFeedback = ({ onRefresh, onSaveFeedback }) => {
@@ -24,7 +25,7 @@ const RecommendationFeedback = ({ onRefresh, onSaveFeedback }) => {
         console.log('Falling back to direct feedback submission');
         const token = localStorage.getItem("token");
         const response = await axios.post(
-          "http://127.0.0.1:5000/recommendation-feedback", 
+          `${API_BASE_URL}/recommendation-feedback`, 
           {
             feedback: value,
             overall: true 
@@ -109,7 +110,7 @@ const Recommended_movies = () => {
       });
     
       const response = await axios.post(
-        "http://127.0.0.1:5000/recommendation-feedback", 
+        `${API_BASE_URL}/recommendation-feedback`, 
         {
           feedback: feedbackValue,
           overall: true 
@@ -158,7 +159,7 @@ const Recommended_movies = () => {
     try {
       console.log("Fetching recommended movies...");
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://127.0.0.1:5000/recommend", {
+      const response = await axios.get(`${API_BASE_URL}/recommend`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -211,7 +212,7 @@ const Recommended_movies = () => {
       try {
         const token = localStorage.getItem("token");
         // Call the refresh endpoint first
-        await axios.post("http://127.0.0.1:5000/refresh-recommendations", {}, {
+        await axios.post(`${API_BASE_URL}/refresh-recommendations`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         

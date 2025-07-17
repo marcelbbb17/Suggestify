@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useUser } from '../context/User_Context';
 import '../styles/RecommendationInsights.css';
+import { API_BASE_URL } from '../index';
 
 const RecommendationInsights = () => {
   const { username } = useUser();
@@ -25,7 +26,7 @@ const RecommendationInsights = () => {
         }
         
         const response = await axios.get(
-          'http://127.0.0.1:5000/recommendation-explanations',
+          `${API_BASE_URL}/recommendation-explanations`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useUser } from '../context/User_Context';
 import Movie_Card from '../components/Movie_Card';
 import '../styles/Movies.css';
+import { API_BASE_URL } from '../index';
 
 const Movies = () => {
   const { username } = useUser();
@@ -41,15 +42,15 @@ const Movies = () => {
 
         // Different categories 
         const categories = {
-          trending: 'https://api.themoviedb.org/3/trending/movie/week',
-          popular: 'https://api.themoviedb.org/3/movie/popular',
-          topRated: 'https://api.themoviedb.org/3/movie/top_rated',
-          upcoming: 'https://api.themoviedb.org/3/movie/upcoming'
+          trending: `${API_BASE_URL}/trending/movie/week`,
+          popular: `${API_BASE_URL}/movie/popular`,
+          topRated: `${API_BASE_URL}/movie/top_rated`,
+          upcoming: `${API_BASE_URL}/movie/upcoming`
         };
 
         // Get data for each category
         const requests = Object.entries(categories).map(async ([category, endpoint]) => {
-          const response = await axios.get(`http://127.0.0.1:5000/proxy?url=${encodeURIComponent(endpoint)}&page=1`, {
+          const response = await axios.get(`${API_BASE_URL}/proxy?url=${encodeURIComponent(endpoint)}&page=1`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -102,7 +103,7 @@ const Movies = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://127.0.0.1:5000/search?query=${encodeURIComponent(searchQuery)}`, {
+      const response = await axios.get(`${API_BASE_URL}/search?query=${encodeURIComponent(searchQuery)}`, {
         headers: {Authorization: `Bearer ${token}`}
       });
       const results = response.data.results || [];

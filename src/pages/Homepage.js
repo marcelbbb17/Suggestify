@@ -4,6 +4,7 @@ import { useUser } from "../context/User_Context";
 import axios from "axios";
 import Movie_Card from "../components/Movie_Card";
 import "../styles/Homepage.css";
+import { API_BASE_URL } from '../index';
 
 function Homepage() {
   const { username } = useUser();
@@ -27,13 +28,13 @@ function Homepage() {
 
         // Fetch trending movies
         const trendingResponse = await axios.get(
-          'http://127.0.0.1:5000/proxy?url=https://api.themoviedb.org/3/trending/movie/week&page=1',
+          `${API_BASE_URL}/proxy?url=https://api.themoviedb.org/3/trending/movie/week&page=1`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
         // Fetch popular movies 
         const popularResponse = await axios.get(
-          'http://127.0.0.1:5000/proxy?url=https://api.themoviedb.org/3/movie/popular&page=1',
+          `${API_BASE_URL}/proxy?url=https://api.themoviedb.org/3/movie/popular&page=1`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 

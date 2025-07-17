@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useUser } from '../context/User_Context';
 import '../styles/MovieDetails.css';
 import RecommendationExplanation from '../components/RecommendationExplanation';
+import { API_BASE_URL } from '../index';
 
 const MovieDetails = () => {
   const { movieId } = useParams();
@@ -40,28 +41,28 @@ const MovieDetails = () => {
         }
 
         // Fetch movie detail
-        const movieResponse = await axios.get(`http://127.0.0.1:5000/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}`)}&append_to_response=videos,images,keywords`, {
+        const movieResponse = await axios.get(`${API_BASE_URL}/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}`)}&append_to_response=videos,images,keywords`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
         // Fetch cast and crew information
-        const creditsResponse = await axios.get(`http://127.0.0.1:5000/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}/credits`)}`, {
+        const creditsResponse = await axios.get(`${API_BASE_URL}/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}/credits`)}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
         // Fetch similar movies
-        const similarResponse = await axios.get(`http://127.0.0.1:5000/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}/similar`)}`, {
+        const similarResponse = await axios.get(`${API_BASE_URL}/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}/similar`)}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
         // Fetch reviews
-        const reviewsResponse = await axios.get(`http://127.0.0.1:5000/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}/reviews`)}`, {
+        const reviewsResponse = await axios.get(`${API_BASE_URL}/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}/reviews`)}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
         // Check if movie is in user's watchlist
         try {
-          const watchlistResponse = await axios.get(`http://127.0.0.1:5000/watchlist`, {
+          const watchlistResponse = await axios.get(`${API_BASE_URL}/watchlist`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -117,7 +118,7 @@ const MovieDetails = () => {
   const handleAddToWatchlist = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://127.0.0.1:5000/watchlist', {
+      await axios.post(`${API_BASE_URL}/watchlist`, {
         movie_id: parseInt(movieId),
         status: 'want_to_watch'
       }, {
@@ -135,7 +136,7 @@ const MovieDetails = () => {
   const handleUpdateWatchlist = async (status) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://127.0.0.1:5000/watchlist/${movieId}`, {
+      await axios.put(`${API_BASE_URL}/watchlist/${movieId}`, {
         status: status
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -152,7 +153,7 @@ const MovieDetails = () => {
   const handleRateMovie = async (rating) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://127.0.0.1:5000/watchlist/${movieId}`, {
+      await axios.put(`${API_BASE_URL}/watchlist/${movieId}`, {
         user_rating: rating
       }, {
         headers: { Authorization: `Bearer ${token}` }

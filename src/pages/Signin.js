@@ -3,6 +3,7 @@ import "../styles/Signin.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../context/User_Context";
+import { API_BASE_URL } from '../index';
 
 function Signin() {
   const {setUsername} = useUser()
@@ -16,7 +17,7 @@ function Signin() {
     event.preventDefault(); // prevents page from relaoding everytime user click the button
 
     try {
-      const response = await axios.post("http://127.0.0.1:5000/signup", {
+      const response = await axios.post(`${API_BASE_URL}/signup`, {
         email, username, password,
       });
       const token = response.data.token

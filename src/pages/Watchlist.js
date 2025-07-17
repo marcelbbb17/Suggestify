@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { useUser } from "../context/User_Context";
 import '../styles/Watchlist.css';
+import { API_BASE_URL } from '../index';
 
 function Watchlist() {
   const { username } = useUser();
@@ -42,7 +43,7 @@ function Watchlist() {
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://127.0.0.1:5000/watchlist', {
+      const response = await axios.get(`${API_BASE_URL}/watchlist`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -123,7 +124,7 @@ function Watchlist() {
     try {
       // Updates changes made in database
       const token = localStorage.getItem('token');
-      await axios.put(`http://127.0.0.1:5000/watchlist/${movieId}`, editedItem, {
+      await axios.put(`${API_BASE_URL}/watchlist/${movieId}`, editedItem, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -158,7 +159,7 @@ function Watchlist() {
     try {
       // Deletes item from database 
       const token = localStorage.getItem('token');
-      await axios.delete(`http://127.0.0.1:5000/watchlist/${movieId}`, {
+      await axios.delete(`${API_BASE_URL}/watchlist/${movieId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

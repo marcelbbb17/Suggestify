@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/RecommendationExplanation.css';
+import { API_BASE_URL } from '../index';
 
 const RecommendationExplanation = ({ movieId }) => {
   const [explanation, setExplanation] = useState(null);
@@ -23,7 +24,7 @@ const RecommendationExplanation = ({ movieId }) => {
         }
         
         const response = await axios.get(
-          `http://127.0.0.1:5000/recommendation-explanations?movie_id=${movieId}`,
+          `${API_BASE_URL}/recommendation-explanations?movie_id=${movieId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         
