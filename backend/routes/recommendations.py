@@ -23,6 +23,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from datetime import datetime, timedelta
 from config import get_config
+import os
 
 recommendations_bp = Blueprint('recommendations', __name__)
 config = get_config()
@@ -454,11 +455,12 @@ def generate_recommendation_explanation(movie):
 @cache_decorator(ttl=3600)  # Cache for 1 hour    
 def fetch_movies_for_user(current_user, user_preferences):
     """ Fetch candidate movies for recommendations """
-    from flask import current_app
+    from flask import current_app, request
     
-    # Use the movies endpoint to get candidate movies
+    # Use environment variable for base URL, fallback to production URL
+    BASE_URL = os.getenv('API_BASE_URL', 'https://suggestify-backend-cuvb.onrender.com')
     response = requests.get(
-        "http://127.0.0.1:5000/movies",
+        f"{BASE_URL}/movies",
         headers={"Authorization": request.headers.get("Authorization")}
     )
 
