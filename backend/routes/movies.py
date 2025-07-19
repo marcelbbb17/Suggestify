@@ -33,6 +33,8 @@ def get_user_preferences(email):
 @token_required
 def get_movies(current_user):
     """Get movies based on user preferences."""
+
+    print("Now we are in movies route")
     # Uses caching to avoid repeated API calls 
     cache_key = f"movie_data_{current_user}"
     cached_data = get_cached_data(cache_key)

@@ -457,6 +457,7 @@ def fetch_movies_for_user(current_user, user_preferences):
     """ Fetch candidate movies for recommendations """
     from flask import current_app, request
     
+    print("Inside fetch_movies_for_user")
     # Use environment variable for base URL, fallback to production URL
     BASE_URL = os.getenv('API_BASE_URL', 'https://suggestify-backend-cuvb.onrender.com')
     response = requests.get(
