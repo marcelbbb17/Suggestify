@@ -457,19 +457,37 @@ def fetch_movies_for_user(current_user, user_preferences):
     """ Fetch candidate movies for recommendations """
     from flask import current_app, request
     
-    print("Inside fetch_movies_for_user")
     # Use environment variable for base URL, fallback to production URL
     BASE_URL = os.getenv('API_BASE_URL', 'https://suggestify-backend-cuvb.onrender.com')
-    response = requests.get(
-        f"{BASE_URL}/movies",
-        headers={"Authorization": request.headers.get("Authorization")}
-    )
-
-    if response.status_code == 200:
-        all_movies = response.json().get("movies", [])
-        return all_movies
-    else:
-        print(f"Failed to fetch movies: {response.status_code}")
+    movies_url = f"{BASE_URL}/movies"
+    
+    print(f"DEBUG: About to make request to {movies_url}")
+    print(f"DEBUG: Authorization header: {request.headers.get('Authorization')[:20] if request.headers.get('Authorization') else 'None'}...")
+    
+    try:
+        response = requests.get(
+            movies_url,
+            headers={"Authorization": request.headers.get("Authorization")},
+            timeout=25  # 25 second timeout
+        )
+        print(f"DEBUG: Response status code: {response.status_code}")
+        
+        if response.status_code == 200:
+            all_movies = response.json().get("movies", [])
+            print(f"DEBUG: Successfully got {len(all_movies)} movies")
+            return all_movies
+        else:
+            print(f"DEBUG: Failed to fetch movies: {response.status_code}")
+            print(f"DEBUG: Response content: {response.text[:200]}...")
+            return []
+    except requests.exceptions.Timeout:
+        print("DEBUG: Request to /movies timed out after 25 seconds")
+        return []
+    except requests.exceptions.ConnectionError as e:
+        print(f"DEBUG: Connection error to /movies: {e}")
+        return []
+    except Exception as e:
+        print(f"DEBUG: Unexpected error in fetch_movies_for_user: {e}")
         return []
 
 def add_enhanced_profile_to_movie(movie):

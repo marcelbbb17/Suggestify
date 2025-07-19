@@ -66,7 +66,7 @@ def get_movies(current_user):
         "upcoming": f"https://api.themoviedb.org/3/movie/upcoming?api_key={TMDB_KEY}&language=en-US&page="        
     }   
 
-    pages_per_category = 2
+    pages_per_category = 1 
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         for category, base_url in categories.items():
@@ -98,7 +98,7 @@ def get_movies(current_user):
 def fetch_movie_data(url, favourite_genres, favourite_actors, genre_mapping):
     """Fetch movie data from TMDB API with better error handling."""
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)  # Add timeout
         if response.status_code != 200:
             print(f"Error: Status code {response.status_code} for URL {url}")
             return []
