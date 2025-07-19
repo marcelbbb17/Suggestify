@@ -482,7 +482,6 @@ def fetch_movies_for_user(current_user, user_preferences):
         response = requests.get(
             movies_url,
             headers={"Authorization": request.headers.get("Authorization")},
-            timeout=60  # Increased from 25 to 60 seconds
         )
         print(f"DEBUG: Response status code: {response.status_code}")
         
@@ -494,9 +493,6 @@ def fetch_movies_for_user(current_user, user_preferences):
             print(f"DEBUG: Failed to fetch movies: {response.status_code}")
             print(f"DEBUG: Response content: {response.text[:200]}...")
             return []
-    except requests.exceptions.Timeout:
-        print("DEBUG: Request to /movies timed out after 60 seconds")
-        return []
     except requests.exceptions.ConnectionError as e:
         print(f"DEBUG: Connection error to /movies: {e}")
         return []
