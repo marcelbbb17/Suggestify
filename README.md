@@ -46,40 +46,93 @@ git clone https://github.com/marcelbbb17/suggestify.git
 cd suggestify
 ```
 
+---
+
 ### 2. **Set Up the Backend**
 
-#### a. **Install Python & MySQL**
-- Install [Python 3.8+](https://www.python.org/downloads/)
-- Install [MySQL Community Server](https://dev.mysql.com/downloads/mysql/)
+#### a. **Install Prerequisites**
+- **Python 3.8+**: [Download Python](https://www.python.org/downloads/)
+- **MySQL Community Server**: [Download MySQL](https://dev.mysql.com/downloads/mysql/)
+- **Node.js & npm** (for the frontend): [Download Node.js](https://nodejs.org/)
 
-#### b. **Create and Configure the Database**
-- Create a MySQL database (e.g., `suggestify`)
-- Import the provided SQL schema (if available) or create tables as needed
+#### b. **Create the Database**
+1. **Open MySQL Workbench or the MySQL CLI** and run:
+    ```sql
+    CREATE DATABASE suggestify;
+    USE suggestify;
+    ```
+2. **Run the provided schema file to create all tables:**
+    ```bash
+    mysql -u root -p suggestify < suggestify_schema.sql
+    ```
+    *(You can find `suggestify_schema.sql` in this repo.)*
 
 #### c. **Set Up the Backend Environment**
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
+1. **Navigate to the backend folder:**
+    ```bash
+    cd backend
+    ```
+2. **Create and activate a virtual environment:**
+    - On macOS/Linux:
+      ```bash
+      python3 -m venv venv
+      source venv/bin/activate
+      ```
+    - On Windows:
+      ```bash
+      python -m venv venv
+      venv\Scripts\activate
+      ```
+3. **Install Python dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+4. **Create a `.env` file in the `backend/` folder with the following content:**
+    ```env
+    DB_HOST=localhost
+    DB_PORT=3306
+    DB_USER=root
+    DB_PASSWORD=your_mysql_password
+    DB_NAME=suggestify
 
-- Open MySQL and create a database:
-  ```sql
-  CREATE DATABASE suggestify;
-  USE suggestify;
-  ```
-- **Run the provided `suggestify_schema.sql` file** to create all tables:
-  ```bash
-  mysql -u root -p suggestify < suggestify_schema.sql
-  ```
-- *(You can find `suggestify_schema.sql` in this repo.)*
+    SECRET_KEY=your_secret_key
+    TMBD_API_KEY=your_tmdb_api_key
 
-#### d. **Start the Frontend**
-```bash
-npm start
-```
-- The app will open at [http://localhost:3000](http://localhost:3000)
+    FLASK_ENV=development
+    API_BASE_URL=http://localhost:5000
+    ENABLE_ACTORS=true
+    ENABLE_ENHANCED_PROFILES=true
+    PAGES_PER_CATEGORY=10
+    ```
+    - Get a [TMDB API key](https://www.themoviedb.org/documentation/api) (free signup).
+
+5. **Start the backend server:**
+    ```bash
+    flask run
+    ```
+    or, if using `app.py`:
+    ```bash
+    python app.py
+    ```
+    - The backend will run at [http://localhost:5000](http://localhost:5000)
+
+---
+
+### 3. **Set Up the Frontend**
+
+1. **Navigate to the project root (if not already there):**
+    ```bash
+    cd ../
+    ```
+2. **Install frontend dependencies:**
+    ```bash
+    npm install
+    ```
+3. **Start the frontend:**
+    ```bash
+    npm start
+    ```
+    - The app will open at [http://localhost:3000](http://localhost:3000)
 
 ---
 
