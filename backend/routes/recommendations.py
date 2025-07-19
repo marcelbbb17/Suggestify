@@ -1028,10 +1028,12 @@ def recommend_movies(current_user):
                 release_lock(user_id)
                 return jsonify({"error": "User preferences not found"}), 404
             
+            print("user preferences", user_preferences) 
             # Get watchlist data for the user preference model
             watchlist_prefs = get_user_watchlist_preferences(user_id)
             watchlist_items = watchlist_prefs.get('all_watchlist_items', [])
             
+            print("Received watchlist preferences", watchlist_prefs)
             # Build the enhanced user preference model
             try:
                 user_model = build_user_preference_model(user_id, watchlist_items, user_preferences)
@@ -1042,11 +1044,13 @@ def recommend_movies(current_user):
             # Get favourite movies
             favorite_movies = user_preferences.get("favourite_movies", [])
             favorite_movies = parse_list_from_db(favorite_movies)
-            
+            print("favorite movies", favorite_movies)
+
             if not favorite_movies:
                 print("Warning: No favorite movies in preferences")
                 favorite_movies = ["action", "comedy", "romance", "adventure"] # Generic movie genre incase all fails
             
+            print("Now sending data to movies route")
             # Get candidate movies
             candidate_movies = fetch_movies_for_user(current_user, user_preferences)
             
