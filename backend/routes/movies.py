@@ -64,7 +64,7 @@ def get_movies(current_user):
         "upcoming": f"https://api.themoviedb.org/3/movie/upcoming?api_key={TMDB_KEY}&language=en-US&page="        
     }   
 
-    pages_per_category = 10
+    pages_per_category = 2
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         for category, base_url in categories.items():
