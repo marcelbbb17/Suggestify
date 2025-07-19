@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 import ast
 from config import get_config
+import os
 
 movies_bp = Blueprint('movies', __name__)
 config = get_config()
@@ -112,6 +113,10 @@ def fetch_movie_data(url, favourite_genres, favourite_actors, genre_mapping):
             
         processed_movies = []
         
+        # Check environment variables for feature flags
+        ENABLE_ACTORS = os.getenv('ENABLE_ACTORS', 'true').lower() == 'true'
+        ENABLE_ENHANCED_PROFILES = os.getenv('ENABLE_ENHANCED_PROFILES', 'true').lower() == 'true'
+        
         for i, movie in enumerate(movies):
             try:
                 if not isinstance(movie, dict):
@@ -125,33 +130,47 @@ def fetch_movie_data(url, favourite_genres, favourite_actors, genre_mapping):
                         genre_name = genre_mapping.get(genre_id, "unknown")
                         movie_genres.append(genre_name)
                 
-                # Get actors
+                # Get actors (configurable)
                 movie_id = movie.get("id")
                 if not movie_id:
                     continue
                     
-                # Check if any genre or actor match user preferences
-                actors = get_actors(movie_id)
+                if ENABLE_ACTORS:
+                    try:
+                        actors = get_actors(movie_id)
+                    except Exception as e:
+                        print(f"Error getting actors for movie {movie_id}: {e}")
+                        actors = []
+                else:
+                    actors = []
                 
-                # Get detailed profile
-                try:
-                    profile_result = build_enhanced_movie_profile(movie_id)
-                    if profile_result:
-                        profile, enhanced_elements, details = profile_result
+                # Get enhanced profile (configurable)
+                if ENABLE_ENHANCED_PROFILES:
+                    try:
+                        profile_result = build_enhanced_movie_profile(movie_id)
+                        if profile_result:
+                            profile, enhanced_elements, details = profile_result
+                            movie["genres"] = movie_genres
+                            movie["actors"] = actors
+                            movie["profile"] = profile
+                            movie["themes"] = enhanced_elements.get("themes", [])
+                            movie["tones"] = enhanced_elements.get("tones", [])
+                            movie["franchises"] = enhanced_elements.get("franchises", [])
+                            movie.pop("genre_ids", None)
+                            processed_movies.append(movie)
+                    except Exception as e:
+                        print(f"Error building profile for movie {movie_id}: {e}")
+                        # Fallback to basic info
                         movie["genres"] = movie_genres
                         movie["actors"] = actors
-                        movie["profile"] = profile
-                        movie["themes"] = enhanced_elements.get("themes", [])
-                        movie["tones"] = enhanced_elements.get("tones", [])
-                        movie["franchises"] = enhanced_elements.get("franchises", [])
                         movie.pop("genre_ids", None)
                         processed_movies.append(movie)
-                except Exception as e:
-                    print(f"Error building profile for movie {movie_id}: {e}")
+                else:
+                    # Basic processing only
                     movie["genres"] = movie_genres
                     movie["actors"] = actors
+                    movie.pop("genre_ids", None)
                     processed_movies.append(movie)
-                    print(f"Added movie with basic info: {movie.get('title')}")
                     
             except Exception as e:
                 print(f"Error processing movie {i}: {e}")

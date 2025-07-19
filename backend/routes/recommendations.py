@@ -468,7 +468,7 @@ def fetch_movies_for_user(current_user, user_preferences):
         response = requests.get(
             movies_url,
             headers={"Authorization": request.headers.get("Authorization")},
-            timeout=25  # 25 second timeout
+            timeout=60  # Increased from 25 to 60 seconds
         )
         print(f"DEBUG: Response status code: {response.status_code}")
         
