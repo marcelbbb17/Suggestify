@@ -200,14 +200,19 @@ def get_profiles_for_favorite_movies(favorite_movies, candidate_movies=None):
     """ Get profiles for favorite movies """
     valid_profiles = []
     
+    print(f"DEBUG: Starting get_profiles_for_favorite_movies with {len(favorite_movies)} favorite movies")
+    
     for i, fav_movie in enumerate(favorite_movies):
-        try:            
+        try:
+            print(f"DEBUG: Processing favorite movie {i+1}/{len(favorite_movies)}: {fav_movie}")
+            
             # Try to find in candidate movies first
             if candidate_movies:
                 for movie in candidate_movies:
                     if is_same_movie(movie.get("title", ""), fav_movie):
                         if "profile" in movie:
                             valid_profiles.append(movie.get("profile"))
+                            print(f"DEBUG: Found profile in candidate movies for {fav_movie}")
                             continue
             
             # If not found, search directly
@@ -228,6 +233,8 @@ def get_profiles_for_favorite_movies(favorite_movies, candidate_movies=None):
             print(f"Error building profile for {fav_movie}: {e}")
             minimal_profile = f"{fav_movie} movie"
             valid_profiles.append(minimal_profile)
+    
+    print(f"DEBUG: Completed get_profiles_for_favorite_movies with {len(valid_profiles)} profiles")
     return valid_profiles
 
 def get_fallback_recommendations(user_preferences):
@@ -456,9 +463,16 @@ def generate_recommendation_explanation(movie):
 def fetch_movies_for_user(current_user, user_preferences):
     """ Fetch candidate movies for recommendations """
     from flask import current_app, request
+    from config import is_production
     
-    # Use environment variable for base URL, fallback to production URL
-    BASE_URL = os.getenv('API_BASE_URL', 'https://suggestify-backend-cuvb.onrender.com')
+    # Auto-detect environment and set appropriate base URL
+    if is_production():
+        # Production environment (Render)
+        BASE_URL = os.getenv('API_BASE_URL', 'https://suggestify-backend-cuvb.onrender.com')
+    else:
+        # Local development
+        BASE_URL = os.getenv('API_BASE_URL', 'http://localhost:5000')
+    
     movies_url = f"{BASE_URL}/movies"
     
     print(f"DEBUG: About to make request to {movies_url}")
@@ -481,7 +495,7 @@ def fetch_movies_for_user(current_user, user_preferences):
             print(f"DEBUG: Response content: {response.text[:200]}...")
             return []
     except requests.exceptions.Timeout:
-        print("DEBUG: Request to /movies timed out after 25 seconds")
+        print("DEBUG: Request to /movies timed out after 60 seconds")
         return []
     except requests.exceptions.ConnectionError as e:
         print(f"DEBUG: Connection error to /movies: {e}")

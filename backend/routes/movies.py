@@ -67,7 +67,13 @@ def get_movies(current_user):
         "upcoming": f"https://api.themoviedb.org/3/movie/upcoming?api_key={TMDB_KEY}&language=en-US&page="        
     }   
 
-    pages_per_category = 1 
+    # Auto-detect environment and adjust pages accordingly
+    from config import is_production
+    
+    if is_production():
+        pages_per_category = int(os.getenv('PAGES_PER_CATEGORY', '1'))
+    else:
+        pages_per_category = int(os.getenv('PAGES_PER_CATEGORY', '2'))
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         for category, base_url in categories.items():
@@ -99,7 +105,7 @@ def get_movies(current_user):
 def fetch_movie_data(url, favourite_genres, favourite_actors, genre_mapping):
     """Fetch movie data from TMDB API with better error handling."""
     try:
-        response = requests.get(url, timeout=10)  # Add timeout
+        response = requests.get(url, timeout=10) 
         if response.status_code != 200:
             print(f"Error: Status code {response.status_code} for URL {url}")
             return []
@@ -113,9 +119,15 @@ def fetch_movie_data(url, favourite_genres, favourite_actors, genre_mapping):
             
         processed_movies = []
         
-        # Check environment variables for feature flags
-        ENABLE_ACTORS = os.getenv('ENABLE_ACTORS', 'true').lower() == 'true'
-        ENABLE_ENHANCED_PROFILES = os.getenv('ENABLE_ENHANCED_PROFILES', 'true').lower() == 'true'
+        # Auto-detect environment and adjust features accordingly
+        from config import is_production
+        
+        if is_production():
+            ENABLE_ACTORS = os.getenv('ENABLE_ACTORS', 'false').lower() == 'true'
+            ENABLE_ENHANCED_PROFILES = os.getenv('ENABLE_ENHANCED_PROFILES', 'false').lower() == 'true'
+        else:
+            ENABLE_ACTORS = os.getenv('ENABLE_ACTORS', 'true').lower() == 'true'
+            ENABLE_ENHANCED_PROFILES = os.getenv('ENABLE_ENHANCED_PROFILES', 'true').lower() == 'true'
         
         for i, movie in enumerate(movies):
             try:
