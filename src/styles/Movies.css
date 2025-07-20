@@ -184,15 +184,6 @@
   justify-items: center;
 }
 
-.movie-card-wrapper {
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.movie-card-wrapper:hover {
-  transform: scale(1.03);
-}
-
 .loading-indicator {
   text-align: center;
   padding: 50px;
@@ -283,7 +274,7 @@
   }
   
   .movies-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 20px;
   }
   

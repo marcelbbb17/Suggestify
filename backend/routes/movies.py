@@ -107,7 +107,7 @@ def fetch_movie_data(url, favourite_genres, favourite_actors, genre_mapping):
     try:
         response = requests.get(url, timeout=10) 
         if response.status_code != 200:
-            print(f"Error: Status code {response.status_code} for URL {url}")
+            print(f"Error: Status code {response.status_code} for TMDB API call")
             return []
         
         data = response.json()
@@ -231,7 +231,8 @@ def proxy_api_request(current_user):
             
             return jsonify(data), 200
         else:
-            return jsonify({"error": f"API request failed with status: {response.status_code}"}), response.status_code
+            print(f"Error: Status code {response.status_code} for TMDB API call ")
+            return jsonify({"error": "Failed to fetch from TMDB"}), 500
             
     except Exception as e:
         print(f"Error in proxy endpoint: {str(e)}")

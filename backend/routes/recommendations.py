@@ -474,10 +474,7 @@ def fetch_movies_for_user(current_user, user_preferences):
         BASE_URL = os.getenv('API_BASE_URL', 'http://localhost:5000')
     
     movies_url = f"{BASE_URL}/movies"
-    
-    print(f"DEBUG: About to make request to {movies_url}")
-    print(f"DEBUG: Authorization header: {request.headers.get('Authorization')[:20] if request.headers.get('Authorization') else 'None'}...")
-    
+
     try:
         response = requests.get(
             movies_url,
@@ -1062,7 +1059,7 @@ def recommend_movies(current_user):
             watchlist_prefs = get_user_watchlist_preferences(user_id)
             watchlist_items = watchlist_prefs.get('all_watchlist_items', [])
             
-            print("Received watchlist preferences", watchlist_prefs)
+            print("Received watchlist preferences")
             # Build the enhanced user preference model
             try:
                 user_model = build_user_preference_model(user_id, watchlist_items, user_preferences)

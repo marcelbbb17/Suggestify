@@ -42,15 +42,15 @@ const Movies = () => {
 
         // Different categories 
         const categories = {
-          trending: `${API_BASE_URL}/trending/movie/week`,
-          popular: `${API_BASE_URL}/movie/popular`,
-          topRated: `${API_BASE_URL}/movie/top_rated`,
-          upcoming: `${API_BASE_URL}/movie/upcoming`
+          trending: `${API_BASE_URL}/proxy?url=https://api.themoviedb.org/3/trending/movie/week&page=1`,
+          popular: `${API_BASE_URL}/proxy?url=https://api.themoviedb.org/3/movie/popular&page=1`,
+          topRated: `${API_BASE_URL}/proxy?url=https://api.themoviedb.org/3/movie/top_rated&page=1`,
+          upcoming: `${API_BASE_URL}/proxy?url=https://api.themoviedb.org/3/movie/upcoming&page=1`
         };
 
         // Get data for each category
         const requests = Object.entries(categories).map(async ([category, endpoint]) => {
-          const response = await axios.get(`${API_BASE_URL}/proxy?url=${encodeURIComponent(endpoint)}&page=1`, {
+          const response = await axios.get(endpoint, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -238,9 +238,7 @@ const Movies = () => {
         ) : (
           <div className="movies-grid">
             {displayedMovies.map(movie => (
-              <div key={movie.id} className="movie-card-wrapper" onClick={() => navigate(`/movie/${movie.id}`)}>
-                <Movie_Card movie={movie} />
-              </div>
+              <Movie_Card key={movie.id} movie={movie} />
             ))}
           </div>
         )}
